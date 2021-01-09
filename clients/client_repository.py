@@ -1,5 +1,6 @@
 import pgsql_db_layer as db
 
+
 #######################
 # client_cc_history
 #######################
@@ -16,9 +17,17 @@ def get_client_cc_history_by_id(id):
     sql = """
     SELECT cc_hist_id,client_id,ccaccount_id,ccevent,ccevent_amt,details,recorded_on
     FROM client_cc_history
-    WHERE id = %s
+    WHERE cc_hist_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_cc_history_by_client_id(client_id):
+    sql = """
+    SELECT cc_hist_id,client_id,ccaccount_id,ccevent,ccevent_amt,details,recorded_on
+    FROM client_cc_history
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_cc_history( client_cc_history:ClientCcHistory):
     sql = """
@@ -83,6 +92,7 @@ def insert_client_cc_history( client_cc_history:ClientCcHistory):
     ;
 """
     val = [
+            
             ClientCcHistory.client_id
             , ClientCcHistory.ccaccount_id
             , ClientCcHistory.ccevent
@@ -92,24 +102,29 @@ def insert_client_cc_history( client_cc_history:ClientCcHistory):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_cc_history( client_cc_history:ClientCcHistory):
     sql = """
     UPDATE client_cc_history
-    SET client_id=%s, ccaccount_id=%s, ccevent=%s, ccevent_amt=%s, details=%s, recorded_on=%s)
-    WHERE cc_hist_id=%s
+    SET client_id = %s, ccaccount_id = %s, ccevent = %s, ccevent_amt = %s, details = %s, recorded_on = %s
+    WHERE cc_hist_id = %s
 """
-    val = [
-            ClientCcHistory.client_id
+    val = [ClientCcHistory.client_id
             , ClientCcHistory.ccaccount_id
             , ClientCcHistory.ccevent
             , ClientCcHistory.ccevent_amt
             , ClientCcHistory.details
             , ClientCcHistory.recorded_on
+        
             , ClientCcHistory.cc_hist_id
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_person
@@ -130,6 +145,14 @@ def get_client_person_by_id(id):
     WHERE client_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_person_by_client_id(client_id):
+    sql = """
+    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,phone,phone_2,phone_cell,phone_fax,phone_official,client_info,recorded_on
+    FROM client_person
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_person( client_person:ClientPerson):
     sql = """
@@ -234,6 +257,7 @@ def insert_client_person( client_person:ClientPerson):
     ;
 """
     val = [
+            
             ClientPerson.last_name
             , ClientPerson.first_name
             , ClientPerson.middle_name
@@ -253,15 +277,14 @@ def insert_client_person( client_person:ClientPerson):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_person( client_person:ClientPerson):
     sql = """
     UPDATE client_person
-    SET last_name=%s, first_name=%s, middle_name=%s, dob=%s, gender=%s, ssn=%s, mmn=%s, email=%s, pwd=%s, phone=%s, phone_2=%s, phone_cell=%s, phone_fax=%s, phone_official=%s, client_info=%s, recorded_on=%s)
-    WHERE client_id=%s
+    SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_fax = %s, phone_official = %s, client_info = %s, recorded_on = %s
+    WHERE client_id = %s
 """
-    val = [
-            ClientPerson.last_name
+    val = [ClientPerson.last_name
             , ClientPerson.first_name
             , ClientPerson.middle_name
             , ClientPerson.dob
@@ -277,10 +300,26 @@ def update_client_person( client_person:ClientPerson):
             , ClientPerson.phone_official
             , ClientPerson.client_info
             , ClientPerson.recorded_on
+        
             , ClientPerson.client_id
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_creditline_history
@@ -298,9 +337,17 @@ def get_client_creditline_history_by_id(id):
     sql = """
     SELECT creditline_id,client_id,cc_account_id,credit_line_date,credit_amt,credit_status,recorded_on
     FROM client_creditline_history
-    WHERE id = %s
+    WHERE creditline_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_creditline_history_by_client_id(client_id):
+    sql = """
+    SELECT creditline_id,client_id,cc_account_id,credit_line_date,credit_amt,credit_status,recorded_on
+    FROM client_creditline_history
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_creditline_history( client_creditline_history:ClientCreditlineHistory):
     sql = """
@@ -365,6 +412,7 @@ def insert_client_creditline_history( client_creditline_history:ClientCreditline
     ;
 """
     val = [
+            
             ClientCreditlineHistory.client_id
             , ClientCreditlineHistory.cc_account_id
             , ClientCreditlineHistory.credit_line_date
@@ -374,24 +422,29 @@ def insert_client_creditline_history( client_creditline_history:ClientCreditline
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_creditline_history( client_creditline_history:ClientCreditlineHistory):
     sql = """
     UPDATE client_creditline_history
-    SET client_id=%s, cc_account_id=%s, credit_line_date=%s, credit_amt=%s, credit_status=%s, recorded_on=%s)
-    WHERE creditline_id=%s
+    SET client_id = %s, cc_account_id = %s, credit_line_date = %s, credit_amt = %s, credit_status = %s, recorded_on = %s
+    WHERE creditline_id = %s
 """
-    val = [
-            ClientCreditlineHistory.client_id
+    val = [ClientCreditlineHistory.client_id
             , ClientCreditlineHistory.cc_account_id
             , ClientCreditlineHistory.credit_line_date
             , ClientCreditlineHistory.credit_amt
             , ClientCreditlineHistory.credit_status
             , ClientCreditlineHistory.recorded_on
+        
             , ClientCreditlineHistory.creditline_id
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_address
@@ -409,9 +462,17 @@ def get_client_address_by_id(id):
     sql = """
     SELECT address_id,client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on
     FROM client_address
-    WHERE id = %s
+    WHERE address_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_address_by_client_id(client_id):
+    sql = """
+    SELECT address_id,client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on
+    FROM client_address
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_address( client_address:ClientAddress):
     sql = """
@@ -496,6 +557,7 @@ def insert_client_address( client_address:ClientAddress):
     ;
 """
     val = [
+            
             ClientAddress.client_id
             , ClientAddress.address_type
             , ClientAddress.address_1
@@ -510,15 +572,14 @@ def insert_client_address( client_address:ClientAddress):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_address( client_address:ClientAddress):
     sql = """
     UPDATE client_address
-    SET client_id=%s, address_type=%s, address_1=%s, address_2=%s, city=%s, state=%s, zip=%s, country=%s, valid_from=%s, valid_to=%s, recorded_on=%s)
-    WHERE address_id=%s
+    SET client_id = %s, address_type = %s, address_1 = %s, address_2 = %s, city = %s, state = %s, zip = %s, country = %s, valid_from = %s, valid_to = %s, recorded_on = %s
+    WHERE address_id = %s
 """
-    val = [
-            ClientAddress.client_id
+    val = [ClientAddress.client_id
             , ClientAddress.address_type
             , ClientAddress.address_1
             , ClientAddress.address_2
@@ -529,10 +590,21 @@ def update_client_address( client_address:ClientAddress):
             , ClientAddress.valid_from
             , ClientAddress.valid_to
             , ClientAddress.recorded_on
+        
             , ClientAddress.address_id
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_cc_account
@@ -550,9 +622,17 @@ def get_client_cc_account_by_id(id):
     sql = """
     SELECT cc_account_id,client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
     FROM client_cc_account
-    WHERE id = %s
+    WHERE cc_account_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_cc_account_by_client_id(client_id):
+    sql = """
+    SELECT cc_account_id,client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+    FROM client_cc_account
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_cc_account( client_cc_account:ClientCcAccount):
     sql = """
@@ -649,6 +729,7 @@ def insert_client_cc_account( client_cc_account:ClientCcAccount):
     ;
 """
     val = [
+            
             ClientCcAccount.client_id
             , ClientCcAccount.cc_card_id
             , ClientCcAccount.name
@@ -666,15 +747,14 @@ def insert_client_cc_account( client_cc_account:ClientCcAccount):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_cc_account( client_cc_account:ClientCcAccount):
     sql = """
     UPDATE client_cc_account
-    SET client_id=%s, cc_card_id=%s, name=%s, account=%s, account_info=%s, cc_login=%s, cc_pwd=%s, cc_status=%s, annual_fee_waived=%s, credit_limit=%s, addtional_card=%s, notes=%s, ccaccount_info=%s, recorded_on=%s)
-    WHERE cc_account_id=%s
+    SET client_id = %s, cc_card_id = %s, name = %s, account = %s, account_info = %s, cc_login = %s, cc_pwd = %s, cc_status = %s, annual_fee_waived = %s, credit_limit = %s, addtional_card = %s, notes = %s, ccaccount_info = %s, recorded_on = %s
+    WHERE cc_account_id = %s
 """
-    val = [
-            ClientCcAccount.client_id
+    val = [ClientCcAccount.client_id
             , ClientCcAccount.cc_card_id
             , ClientCcAccount.name
             , ClientCcAccount.account
@@ -688,10 +768,24 @@ def update_client_cc_account( client_cc_account:ClientCcAccount):
             , ClientCcAccount.notes
             , ClientCcAccount.ccaccount_info
             , ClientCcAccount.recorded_on
+        
             , ClientCcAccount.cc_account_id
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_setting
@@ -709,9 +803,17 @@ def get_client_setting_by_id(id):
     sql = """
     SELECT client_setting_id,client_id,prefix,keyname,keyvalue
     FROM client_setting
-    WHERE id = %s
+    WHERE client_setting_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_setting_by_client_id(client_id):
+    sql = """
+    SELECT client_setting_id,client_id,prefix,keyname,keyvalue
+    FROM client_setting
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_setting( client_setting:ClientSetting):
     sql = """
@@ -768,6 +870,7 @@ def insert_client_setting( client_setting:ClientSetting):
     ;
 """
     val = [
+            
             ClientSetting.client_id
             , ClientSetting.prefix
             , ClientSetting.keyname
@@ -775,22 +878,25 @@ def insert_client_setting( client_setting:ClientSetting):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_setting( client_setting:ClientSetting):
     sql = """
     UPDATE client_setting
-    SET client_id=%s, prefix=%s, keyname=%s, keyvalue=%s)
-    WHERE client_setting_id=%s
+    SET client_id = %s, prefix = %s, keyname = %s, keyvalue = %s
+    WHERE client_setting_id = %s
 """
-    val = [
-            ClientSetting.client_id
+    val = [ClientSetting.client_id
             , ClientSetting.prefix
             , ClientSetting.keyname
             , ClientSetting.keyvalue
+        
             , ClientSetting.client_setting_id
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_bank_account
@@ -808,9 +914,17 @@ def get_client_bank_account_by_id(id):
     sql = """
     SELECT bank_account_id,client_id,bank_name,account_num,routing_num,account_login,account_pwd,account_status,debit_card,debit_info,recorded_on
     FROM client_bank_account
-    WHERE id = %s
+    WHERE bank_account_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_bank_account_by_client_id(client_id):
+    sql = """
+    SELECT bank_account_id,client_id,bank_name,account_num,routing_num,account_login,account_pwd,account_status,debit_card,debit_info,recorded_on
+    FROM client_bank_account
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_bank_account( client_bank_account:ClientBankAccount):
     sql = """
@@ -891,6 +1005,7 @@ def insert_client_bank_account( client_bank_account:ClientBankAccount):
     ;
 """
     val = [
+            
             ClientBankAccount.client_id
             , ClientBankAccount.bank_name
             , ClientBankAccount.account_num
@@ -904,15 +1019,14 @@ def insert_client_bank_account( client_bank_account:ClientBankAccount):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_bank_account( client_bank_account:ClientBankAccount):
     sql = """
     UPDATE client_bank_account
-    SET client_id=%s, bank_name=%s, account_num=%s, routing_num=%s, account_login=%s, account_pwd=%s, account_status=%s, debit_card=%s, debit_info=%s, recorded_on=%s)
-    WHERE bank_account_id=%s
+    SET client_id = %s, bank_name = %s, account_num = %s, routing_num = %s, account_login = %s, account_pwd = %s, account_status = %s, debit_card = %s, debit_info = %s, recorded_on = %s
+    WHERE bank_account_id = %s
 """
-    val = [
-            ClientBankAccount.client_id
+    val = [ClientBankAccount.client_id
             , ClientBankAccount.bank_name
             , ClientBankAccount.account_num
             , ClientBankAccount.routing_num
@@ -922,10 +1036,20 @@ def update_client_bank_account( client_bank_account:ClientBankAccount):
             , ClientBankAccount.debit_card
             , ClientBankAccount.debit_info
             , ClientBankAccount.recorded_on
+        
             , ClientBankAccount.bank_account_id
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_note
@@ -943,9 +1067,17 @@ def get_client_note_by_id(id):
     sql = """
     SELECT client_note_id,client_id,note,tags,recorded_by,recorded_on
     FROM client_note
-    WHERE id = %s
+    WHERE client_note_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_note_by_client_id(client_id):
+    sql = """
+    SELECT client_note_id,client_id,note,tags,recorded_by,recorded_on
+    FROM client_note
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_note( client_note:ClientNote):
     sql = """
@@ -1006,6 +1138,7 @@ def insert_client_note( client_note:ClientNote):
     ;
 """
     val = [
+            
             ClientNote.client_id
             , ClientNote.note
             , ClientNote.tags
@@ -1014,23 +1147,27 @@ def insert_client_note( client_note:ClientNote):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_note( client_note:ClientNote):
     sql = """
     UPDATE client_note
-    SET client_id=%s, note=%s, tags=%s, recorded_by=%s, recorded_on=%s)
-    WHERE client_note_id=%s
+    SET client_id = %s, note = %s, tags = %s, recorded_by = %s, recorded_on = %s
+    WHERE client_note_id = %s
 """
-    val = [
-            ClientNote.client_id
+    val = [ClientNote.client_id
             , ClientNote.note
             , ClientNote.tags
             , ClientNote.recorded_by
             , ClientNote.recorded_on
+        
             , ClientNote.client_note_id
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_cc_points
@@ -1048,9 +1185,17 @@ def get_client_cc_points_by_id(id):
     sql = """
     SELECT cc_points_id,client_id,cc_account_id,sold_to,sold_on,sold_points,price,login,pwd,source_info,recorded_on
     FROM client_cc_points
-    WHERE id = %s
+    WHERE cc_points_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_cc_points_by_client_id(client_id):
+    sql = """
+    SELECT cc_points_id,client_id,cc_account_id,sold_to,sold_on,sold_points,price,login,pwd,source_info,recorded_on
+    FROM client_cc_points
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_cc_points( client_cc_points:ClientCcPoints):
     sql = """
@@ -1131,6 +1276,7 @@ def insert_client_cc_points( client_cc_points:ClientCcPoints):
     ;
 """
     val = [
+            
             ClientCcPoints.client_id
             , ClientCcPoints.cc_account_id
             , ClientCcPoints.sold_to
@@ -1144,15 +1290,14 @@ def insert_client_cc_points( client_cc_points:ClientCcPoints):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_cc_points( client_cc_points:ClientCcPoints):
     sql = """
     UPDATE client_cc_points
-    SET client_id=%s, cc_account_id=%s, sold_to=%s, sold_on=%s, sold_points=%s, price=%s, login=%s, pwd=%s, source_info=%s, recorded_on=%s)
-    WHERE cc_points_id=%s
+    SET client_id = %s, cc_account_id = %s, sold_to = %s, sold_on = %s, sold_points = %s, price = %s, login = %s, pwd = %s, source_info = %s, recorded_on = %s
+    WHERE cc_points_id = %s
 """
-    val = [
-            ClientCcPoints.client_id
+    val = [ClientCcPoints.client_id
             , ClientCcPoints.cc_account_id
             , ClientCcPoints.sold_to
             , ClientCcPoints.sold_on
@@ -1162,10 +1307,20 @@ def update_client_cc_points( client_cc_points:ClientCcPoints):
             , ClientCcPoints.pwd
             , ClientCcPoints.source_info
             , ClientCcPoints.recorded_on
+        
             , ClientCcPoints.cc_points_id
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_charges
@@ -1183,9 +1338,17 @@ def get_client_charges_by_id(id):
     sql = """
     SELECT charge_id,client_id,charge_goal,charged,paid,fees,due_on_day,charge_info,recorded_on
     FROM client_charges
-    WHERE id = %s
+    WHERE charge_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_charges_by_client_id(client_id):
+    sql = """
+    SELECT charge_id,client_id,charge_goal,charged,paid,fees,due_on_day,charge_info,recorded_on
+    FROM client_charges
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_charges( client_charges:ClientCharges):
     sql = """
@@ -1258,6 +1421,7 @@ def insert_client_charges( client_charges:ClientCharges):
     ;
 """
     val = [
+            
             ClientCharges.client_id
             , ClientCharges.charge_goal
             , ClientCharges.charged
@@ -1269,15 +1433,14 @@ def insert_client_charges( client_charges:ClientCharges):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_charges( client_charges:ClientCharges):
     sql = """
     UPDATE client_charges
-    SET client_id=%s, charge_goal=%s, charged=%s, paid=%s, fees=%s, due_on_day=%s, charge_info=%s, recorded_on=%s)
-    WHERE charge_id=%s
+    SET client_id = %s, charge_goal = %s, charged = %s, paid = %s, fees = %s, due_on_day = %s, charge_info = %s, recorded_on = %s
+    WHERE charge_id = %s
 """
-    val = [
-            ClientCharges.client_id
+    val = [ClientCharges.client_id
             , ClientCharges.charge_goal
             , ClientCharges.charged
             , ClientCharges.paid
@@ -1285,10 +1448,18 @@ def update_client_charges( client_charges:ClientCharges):
             , ClientCharges.due_on_day
             , ClientCharges.charge_info
             , ClientCharges.recorded_on
+        
             , ClientCharges.charge_id
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_cc_balance_transfer
@@ -1306,9 +1477,17 @@ def get_client_cc_balance_transfer_by_id(id):
     sql = """
     SELECT bal_id,client_id,cc_account_id,due_date,total,credit_line,recorded_on
     FROM client_cc_balance_transfer
-    WHERE id = %s
+    WHERE bal_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_cc_balance_transfer_by_client_id(client_id):
+    sql = """
+    SELECT bal_id,client_id,cc_account_id,due_date,total,credit_line,recorded_on
+    FROM client_cc_balance_transfer
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanceTransfer):
     sql = """
@@ -1373,6 +1552,7 @@ def insert_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanc
     ;
 """
     val = [
+            
             ClientCcBalanceTransfer.client_id
             , ClientCcBalanceTransfer.cc_account_id
             , ClientCcBalanceTransfer.due_date
@@ -1382,24 +1562,29 @@ def insert_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanc
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanceTransfer):
     sql = """
     UPDATE client_cc_balance_transfer
-    SET client_id=%s, cc_account_id=%s, due_date=%s, total=%s, credit_line=%s, recorded_on=%s)
-    WHERE bal_id=%s
+    SET client_id = %s, cc_account_id = %s, due_date = %s, total = %s, credit_line = %s, recorded_on = %s
+    WHERE bal_id = %s
 """
-    val = [
-            ClientCcBalanceTransfer.client_id
+    val = [ClientCcBalanceTransfer.client_id
             , ClientCcBalanceTransfer.cc_account_id
             , ClientCcBalanceTransfer.due_date
             , ClientCcBalanceTransfer.total
             , ClientCcBalanceTransfer.credit_line
             , ClientCcBalanceTransfer.recorded_on
+        
             , ClientCcBalanceTransfer.bal_id
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_cc_action
@@ -1417,9 +1602,17 @@ def get_client_cc_action_by_id(id):
     sql = """
     SELECT cc_action_id,client_id,cc_account_id,ccaction,action_type,action_status,due_date,details,recorded_on
     FROM client_cc_action
-    WHERE id = %s
+    WHERE cc_action_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_cc_action_by_client_id(client_id):
+    sql = """
+    SELECT cc_action_id,client_id,cc_account_id,ccaction,action_type,action_status,due_date,details,recorded_on
+    FROM client_cc_action
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_cc_action( client_cc_action:ClientCcAction):
     sql = """
@@ -1492,6 +1685,7 @@ def insert_client_cc_action( client_cc_action:ClientCcAction):
     ;
 """
     val = [
+            
             ClientCcAction.client_id
             , ClientCcAction.cc_account_id
             , ClientCcAction.ccaction
@@ -1503,15 +1697,14 @@ def insert_client_cc_action( client_cc_action:ClientCcAction):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_cc_action( client_cc_action:ClientCcAction):
     sql = """
     UPDATE client_cc_action
-    SET client_id=%s, cc_account_id=%s, ccaction=%s, action_type=%s, action_status=%s, due_date=%s, details=%s, recorded_on=%s)
-    WHERE cc_action_id=%s
+    SET client_id = %s, cc_account_id = %s, ccaction = %s, action_type = %s, action_status = %s, due_date = %s, details = %s, recorded_on = %s
+    WHERE cc_action_id = %s
 """
-    val = [
-            ClientCcAction.client_id
+    val = [ClientCcAction.client_id
             , ClientCcAction.cc_account_id
             , ClientCcAction.ccaction
             , ClientCcAction.action_type
@@ -1519,10 +1712,18 @@ def update_client_cc_action( client_cc_action:ClientCcAction):
             , ClientCcAction.due_date
             , ClientCcAction.details
             , ClientCcAction.recorded_on
+        
             , ClientCcAction.cc_action_id
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_self_lender
@@ -1540,9 +1741,17 @@ def get_client_self_lender_by_id(id):
     sql = """
     SELECT self_lender_id,client_id,start_date,duration,pay_from,monthly_due_date,termination_date,login,pwd,recorded_on
     FROM client_self_lender
-    WHERE id = %s
+    WHERE self_lender_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_self_lender_by_client_id(client_id):
+    sql = """
+    SELECT self_lender_id,client_id,start_date,duration,pay_from,monthly_due_date,termination_date,login,pwd,recorded_on
+    FROM client_self_lender
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_self_lender( client_self_lender:ClientSelfLender):
     sql = """
@@ -1619,6 +1828,7 @@ def insert_client_self_lender( client_self_lender:ClientSelfLender):
     ;
 """
     val = [
+            
             ClientSelfLender.client_id
             , ClientSelfLender.start_date
             , ClientSelfLender.duration
@@ -1631,15 +1841,14 @@ def insert_client_self_lender( client_self_lender:ClientSelfLender):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_self_lender( client_self_lender:ClientSelfLender):
     sql = """
     UPDATE client_self_lender
-    SET client_id=%s, start_date=%s, duration=%s, pay_from=%s, monthly_due_date=%s, termination_date=%s, login=%s, pwd=%s, recorded_on=%s)
-    WHERE self_lender_id=%s
+    SET client_id = %s, start_date = %s, duration = %s, pay_from = %s, monthly_due_date = %s, termination_date = %s, login = %s, pwd = %s, recorded_on = %s
+    WHERE self_lender_id = %s
 """
-    val = [
-            ClientSelfLender.client_id
+    val = [ClientSelfLender.client_id
             , ClientSelfLender.start_date
             , ClientSelfLender.duration
             , ClientSelfLender.pay_from
@@ -1648,10 +1857,19 @@ def update_client_self_lender( client_self_lender:ClientSelfLender):
             , ClientSelfLender.login
             , ClientSelfLender.pwd
             , ClientSelfLender.recorded_on
+        
             , ClientSelfLender.self_lender_id
+            
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
-
 
 #######################
 # client_cc_transaction
@@ -1669,9 +1887,17 @@ def get_client_cc_transaction_by_id(id):
     sql = """
     SELECT cc_trans_id,client_id,cc_account_id,transaction_date,transaction_type,transaction_status,credit,debit,recorded_on
     FROM client_cc_transaction
-    WHERE id = %s
+    WHERE cc_trans_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_cc_transaction_by_client_id(client_id):
+    sql = """
+    SELECT cc_trans_id,client_id,cc_account_id,transaction_date,transaction_type,transaction_status,credit,debit,recorded_on
+    FROM client_cc_transaction
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 def upsert_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
     sql = """
@@ -1744,6 +1970,7 @@ def insert_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
     ;
 """
     val = [
+            
             ClientCcTransaction.client_id
             , ClientCcTransaction.cc_account_id
             , ClientCcTransaction.transaction_date
@@ -1755,15 +1982,14 @@ def insert_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
         ]
     return db.execute(sql, val)
 
-
+# this has a flaw in loop.index > 2
 def update_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
     sql = """
     UPDATE client_cc_transaction
-    SET client_id=%s, cc_account_id=%s, transaction_date=%s, transaction_type=%s, transaction_status=%s, credit=%s, debit=%s, recorded_on=%s)
-    WHERE cc_trans_id=%s
+    SET client_id = %s, cc_account_id = %s, transaction_date = %s, transaction_type = %s, transaction_status = %s, credit = %s, debit = %s, recorded_on = %s
+    WHERE cc_trans_id = %s
 """
-    val = [
-            ClientCcTransaction.client_id
+    val = [ClientCcTransaction.client_id
             , ClientCcTransaction.cc_account_id
             , ClientCcTransaction.transaction_date
             , ClientCcTransaction.transaction_type
@@ -1771,6 +1997,15 @@ def update_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
             , ClientCcTransaction.credit
             , ClientCcTransaction.debit
             , ClientCcTransaction.recorded_on
+        
             , ClientCcTransaction.cc_trans_id
+            
+            
+            
+            
+            
+            
+            
+                        
         ]
     return db.execute(sql, val)
