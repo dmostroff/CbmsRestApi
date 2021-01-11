@@ -9,3 +9,8 @@ def test_read_main():
     assert response.status_code == 200
     assert response.json() == { 'msg': 'Welcome to CBMS'}
 
+def test_read_client_persons():
+    response = client.get( '/client/person')
+    assert response.status_code == 200
+    print( response)
+    # assert len(response) == 45
