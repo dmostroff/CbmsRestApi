@@ -16,7 +16,6 @@ class ClientPerson(BaseModel):
     phone: str
     phone_2: str
     phone_cell: str
-    phone_fax: str
     phone_official: str
     client_info: str
     recorded_on: datetime

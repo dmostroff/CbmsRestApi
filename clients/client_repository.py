@@ -71,9 +71,7 @@ def upsert_client_cc_history( client_cc_history:ClientCcHistory):
     UNION ALL
     SELECT 'UPDATE' as ACTION, cc_hist_id
     FROM u
-    ;
-    ;
-"""
+    """
     val = [
             ClientCcHistory.cc_hist_id
             , ClientCcHistory.client_id
@@ -89,10 +87,8 @@ def insert_client_cc_history( client_cc_history:ClientCcHistory):
     sql = """
     INSERT INTO client_cc_history( client_id,ccaccount_id,ccevent,ccevent_amt,details,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
-            
             ClientCcHistory.client_id
             , ClientCcHistory.ccaccount_id
             , ClientCcHistory.ccevent
@@ -115,14 +111,7 @@ def update_client_cc_history( client_cc_history:ClientCcHistory):
             , ClientCcHistory.ccevent_amt
             , ClientCcHistory.details
             , ClientCcHistory.recorded_on
-        
             , ClientCcHistory.cc_hist_id
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -133,26 +122,26 @@ import ClientPerson
 
 def get_client_person():
     sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,phone,phone_2,phone_cell,phone_fax,phone_official,client_info,recorded_on
+    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
     FROM client_person
 """
     return db.fetchall(sql)
 
 def get_client_person_by_id(id):
     sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,phone,phone_2,phone_cell,phone_fax,phone_official,client_info,recorded_on
+    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
     FROM client_person
     WHERE client_id = %s
 """
     return db.fetchall(sql, [id])
 
-def get_client_person_by_client_id(client_id):
+def get_client_person_by_client_person_id(client_person_id):
     sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,phone,phone_2,phone_cell,phone_fax,phone_official,client_info,recorded_on
+    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
     FROM client_person
-    WHERE client_id = %s
+    WHERE client_person_id = %s
 """
-    return db.fetchall(sql, [client_id])
+    return db.fetchall(sql, [client_person_id])
 
 def upsert_client_person( client_person:ClientPerson):
     sql = """
@@ -168,10 +157,10 @@ def upsert_client_person( client_person:ClientPerson):
             , %s as mmn
             , %s as email
             , %s as pwd
+            , %s as occupation
             , %s as phone
             , %s as phone_2
             , %s as phone_cell
-            , %s as phone_fax
             , %s as phone_official
             , %s as client_info
             , %s as recorded_on
@@ -188,10 +177,10 @@ def upsert_client_person( client_person:ClientPerson):
             , mmn=t.mmn
             , email=t.email
             , pwd=t.pwd
+            , occupation=t.occupation
             , phone=t.phone
             , phone_2=t.phone_2
             , phone_cell=t.phone_cell
-            , phone_fax=t.phone_fax
             , phone_official=t.phone_official
             , client_info=t.client_info
             , recorded_on=t.recorded_on
@@ -200,7 +189,7 @@ def upsert_client_person( client_person:ClientPerson):
         RETURNING client_id
     ),
     i AS (
-        INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,phone,phone_2,phone_cell,phone_fax,phone_official,client_info,recorded_on)
+        INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on)
         SELECT 
             t.last_name
             , t.first_name
@@ -211,10 +200,10 @@ def upsert_client_person( client_person:ClientPerson):
             , t.mmn
             , t.email
             , t.pwd
+            , t.occupation
             , t.phone
             , t.phone_2
             , t.phone_cell
-            , t.phone_fax
             , t.phone_official
             , t.client_info
             , t.recorded_on
@@ -226,9 +215,7 @@ def upsert_client_person( client_person:ClientPerson):
     UNION ALL
     SELECT 'UPDATE' as ACTION, client_id
     FROM u
-    ;
-    ;
-"""
+    """
     val = [
             ClientPerson.client_id
             , ClientPerson.last_name
@@ -240,10 +227,10 @@ def upsert_client_person( client_person:ClientPerson):
             , ClientPerson.mmn
             , ClientPerson.email
             , ClientPerson.pwd
+            , ClientPerson.occupation
             , ClientPerson.phone
             , ClientPerson.phone_2
             , ClientPerson.phone_cell
-            , ClientPerson.phone_fax
             , ClientPerson.phone_official
             , ClientPerson.client_info
             , ClientPerson.recorded_on
@@ -252,12 +239,10 @@ def upsert_client_person( client_person:ClientPerson):
 
 def insert_client_person( client_person:ClientPerson):
     sql = """
-    INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,phone,phone_2,phone_cell,phone_fax,phone_official,client_info,recorded_on)
+    INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
-            
             ClientPerson.last_name
             , ClientPerson.first_name
             , ClientPerson.middle_name
@@ -267,10 +252,10 @@ def insert_client_person( client_person:ClientPerson):
             , ClientPerson.mmn
             , ClientPerson.email
             , ClientPerson.pwd
+            , ClientPerson.occupation
             , ClientPerson.phone
             , ClientPerson.phone_2
             , ClientPerson.phone_cell
-            , ClientPerson.phone_fax
             , ClientPerson.phone_official
             , ClientPerson.client_info
             , ClientPerson.recorded_on
@@ -281,7 +266,7 @@ def insert_client_person( client_person:ClientPerson):
 def update_client_person( client_person:ClientPerson):
     sql = """
     UPDATE client_person
-    SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_fax = %s, phone_official = %s, client_info = %s, recorded_on = %s
+    SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, occupation = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_official = %s, client_info = %s, recorded_on = %s
     WHERE client_id = %s
 """
     val = [ClientPerson.last_name
@@ -293,31 +278,14 @@ def update_client_person( client_person:ClientPerson):
             , ClientPerson.mmn
             , ClientPerson.email
             , ClientPerson.pwd
+            , ClientPerson.occupation
             , ClientPerson.phone
             , ClientPerson.phone_2
             , ClientPerson.phone_cell
-            , ClientPerson.phone_fax
             , ClientPerson.phone_official
             , ClientPerson.client_info
             , ClientPerson.recorded_on
-        
             , ClientPerson.client_id
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -391,8 +359,6 @@ def upsert_client_creditline_history( client_creditline_history:ClientCreditline
     UNION ALL
     SELECT 'UPDATE' as ACTION, creditline_id
     FROM u
-    ;
-    ;
 """
     val = [
             ClientCreditlineHistory.creditline_id
@@ -409,8 +375,7 @@ def insert_client_creditline_history( client_creditline_history:ClientCreditline
     sql = """
     INSERT INTO client_creditline_history( client_id,cc_account_id,credit_line_date,credit_amt,credit_status,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientCreditlineHistory.client_id
@@ -531,9 +496,7 @@ def upsert_client_address( client_address:ClientAddress):
     UNION ALL
     SELECT 'UPDATE' as ACTION, address_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientAddress.address_id
             , ClientAddress.client_id
@@ -554,8 +517,7 @@ def insert_client_address( client_address:ClientAddress):
     sql = """
     INSERT INTO client_address( client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientAddress.client_id
@@ -613,26 +575,26 @@ import ClientCcAccount
 
 def get_client_cc_account():
     sql = """
-    SELECT cc_account_id,client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+    SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
     FROM client_cc_account
 """
     return db.fetchall(sql)
 
 def get_client_cc_account_by_id(id):
     sql = """
-    SELECT cc_account_id,client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+    SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
     FROM client_cc_account
     WHERE cc_account_id = %s
 """
     return db.fetchall(sql, [id])
 
-def get_client_cc_account_by_client_id(client_id):
+def get_client_cc_account_by_client_cc_account_id(client_cc_account_id):
     sql = """
-    SELECT cc_account_id,client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+    SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
     FROM client_cc_account
-    WHERE client_id = %s
+    WHERE client_cc_account_id = %s
 """
-    return db.fetchall(sql, [client_id])
+    return db.fetchall(sql, [client_cc_account_id])
 
 def upsert_client_cc_account( client_cc_account:ClientCcAccount):
     sql = """
@@ -640,9 +602,10 @@ def upsert_client_cc_account( client_cc_account:ClientCcAccount):
         SELECT 
             %s as cc_account_id
             , %s as client_id
-            , %s as cc_card_id
-            , %s as name
+            , %s as card_name
+            , %s as card_holder
             , %s as account
+            , %s as open_date
             , %s as account_info
             , %s as cc_login
             , %s as cc_pwd
@@ -658,9 +621,10 @@ def upsert_client_cc_account( client_cc_account:ClientCcAccount):
         UPDATE client_cc_account
         SET 
             client_id=t.client_id
-            , cc_card_id=t.cc_card_id
-            , name=t.name
+            , card_name=t.card_name
+            , card_holder=t.card_holder
             , account=t.account
+            , open_date=t.open_date
             , account_info=t.account_info
             , cc_login=t.cc_login
             , cc_pwd=t.cc_pwd
@@ -676,12 +640,13 @@ def upsert_client_cc_account( client_cc_account:ClientCcAccount):
         RETURNING cc_account_id
     ),
     i AS (
-        INSERT INTO client_cc_account( client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
+        INSERT INTO client_cc_account( client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
         SELECT 
             t.client_id
-            , t.cc_card_id
-            , t.name
+            , t.card_name
+            , t.card_holder
             , t.account
+            , t.open_date
             , t.account_info
             , t.cc_login
             , t.cc_pwd
@@ -700,15 +665,14 @@ def upsert_client_cc_account( client_cc_account:ClientCcAccount):
     UNION ALL
     SELECT 'UPDATE' as ACTION, cc_account_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientCcAccount.cc_account_id
             , ClientCcAccount.client_id
-            , ClientCcAccount.cc_card_id
-            , ClientCcAccount.name
+            , ClientCcAccount.card_name
+            , ClientCcAccount.card_holder
             , ClientCcAccount.account
+            , ClientCcAccount.open_date
             , ClientCcAccount.account_info
             , ClientCcAccount.cc_login
             , ClientCcAccount.cc_pwd
@@ -724,16 +688,16 @@ def upsert_client_cc_account( client_cc_account:ClientCcAccount):
 
 def insert_client_cc_account( client_cc_account:ClientCcAccount):
     sql = """
-    INSERT INTO client_cc_account( client_id,cc_card_id,name,account,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    INSERT INTO client_cc_account( client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
     val = [
             
             ClientCcAccount.client_id
-            , ClientCcAccount.cc_card_id
-            , ClientCcAccount.name
+            , ClientCcAccount.card_name
+            , ClientCcAccount.card_holder
             , ClientCcAccount.account
+            , ClientCcAccount.open_date
             , ClientCcAccount.account_info
             , ClientCcAccount.cc_login
             , ClientCcAccount.cc_pwd
@@ -751,13 +715,14 @@ def insert_client_cc_account( client_cc_account:ClientCcAccount):
 def update_client_cc_account( client_cc_account:ClientCcAccount):
     sql = """
     UPDATE client_cc_account
-    SET client_id = %s, cc_card_id = %s, name = %s, account = %s, account_info = %s, cc_login = %s, cc_pwd = %s, cc_status = %s, annual_fee_waived = %s, credit_limit = %s, addtional_card = %s, notes = %s, ccaccount_info = %s, recorded_on = %s
+    SET client_id = %s, card_name = %s, card_holder = %s, account = %s, open_date = %s, account_info = %s, cc_login = %s, cc_pwd = %s, cc_status = %s, annual_fee_waived = %s, credit_limit = %s, addtional_card = %s, notes = %s, ccaccount_info = %s, recorded_on = %s
     WHERE cc_account_id = %s
 """
     val = [ClientCcAccount.client_id
-            , ClientCcAccount.cc_card_id
-            , ClientCcAccount.name
+            , ClientCcAccount.card_name
+            , ClientCcAccount.card_holder
             , ClientCcAccount.account
+            , ClientCcAccount.open_date
             , ClientCcAccount.account_info
             , ClientCcAccount.cc_login
             , ClientCcAccount.cc_pwd
@@ -768,24 +733,9 @@ def update_client_cc_account( client_cc_account:ClientCcAccount):
             , ClientCcAccount.notes
             , ClientCcAccount.ccaccount_info
             , ClientCcAccount.recorded_on
-        
             , ClientCcAccount.cc_account_id
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
-    return db.execute(sql, val)
+    return db.execute(sql, val)            
 
 #######################
 # client_setting
@@ -851,9 +801,7 @@ def upsert_client_setting( client_setting:ClientSetting):
     UNION ALL
     SELECT 'UPDATE' as ACTION, client_setting_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientSetting.client_setting_id
             , ClientSetting.client_id
@@ -867,8 +815,7 @@ def insert_client_setting( client_setting:ClientSetting):
     sql = """
     INSERT INTO client_setting( client_id,prefix,keyname,keyvalue)
     VALUES (%s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientSetting.client_id
@@ -980,9 +927,7 @@ def upsert_client_bank_account( client_bank_account:ClientBankAccount):
     UNION ALL
     SELECT 'UPDATE' as ACTION, bank_account_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientBankAccount.bank_account_id
             , ClientBankAccount.client_id
@@ -1002,8 +947,7 @@ def insert_client_bank_account( client_bank_account:ClientBankAccount):
     sql = """
     INSERT INTO client_bank_account( client_id,bank_name,account_num,routing_num,account_login,account_pwd,account_status,debit_card,debit_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientBankAccount.client_id
@@ -1118,9 +1062,7 @@ def upsert_client_note( client_note:ClientNote):
     UNION ALL
     SELECT 'UPDATE' as ACTION, client_note_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientNote.client_note_id
             , ClientNote.client_id
@@ -1135,8 +1077,7 @@ def insert_client_note( client_note:ClientNote):
     sql = """
     INSERT INTO client_note( client_id,note,tags,recorded_by,recorded_on)
     VALUES (%s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientNote.client_id
@@ -1251,9 +1192,7 @@ def upsert_client_cc_points( client_cc_points:ClientCcPoints):
     UNION ALL
     SELECT 'UPDATE' as ACTION, cc_points_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientCcPoints.cc_points_id
             , ClientCcPoints.client_id
@@ -1273,8 +1212,7 @@ def insert_client_cc_points( client_cc_points:ClientCcPoints):
     sql = """
     INSERT INTO client_cc_points( client_id,cc_account_id,sold_to,sold_on,sold_points,price,login,pwd,source_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientCcPoints.client_id
@@ -1398,9 +1336,7 @@ def upsert_client_charges( client_charges:ClientCharges):
     UNION ALL
     SELECT 'UPDATE' as ACTION, charge_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientCharges.charge_id
             , ClientCharges.client_id
@@ -1418,8 +1354,7 @@ def insert_client_charges( client_charges:ClientCharges):
     sql = """
     INSERT INTO client_charges( client_id,charge_goal,charged,paid,fees,due_on_day,charge_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientCharges.client_id
@@ -1531,9 +1466,7 @@ def upsert_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanc
     UNION ALL
     SELECT 'UPDATE' as ACTION, bal_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientCcBalanceTransfer.bal_id
             , ClientCcBalanceTransfer.client_id
@@ -1549,8 +1482,7 @@ def insert_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanc
     sql = """
     INSERT INTO client_cc_balance_transfer( client_id,cc_account_id,due_date,total,credit_line,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientCcBalanceTransfer.client_id
@@ -1662,9 +1594,7 @@ def upsert_client_cc_action( client_cc_action:ClientCcAction):
     UNION ALL
     SELECT 'UPDATE' as ACTION, cc_action_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientCcAction.cc_action_id
             , ClientCcAction.client_id
@@ -1682,8 +1612,7 @@ def insert_client_cc_action( client_cc_action:ClientCcAction):
     sql = """
     INSERT INTO client_cc_action( client_id,cc_account_id,ccaction,action_type,action_status,due_date,details,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientCcAction.client_id
@@ -1804,9 +1733,7 @@ def upsert_client_self_lender( client_self_lender:ClientSelfLender):
     UNION ALL
     SELECT 'UPDATE' as ACTION, self_lender_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientSelfLender.self_lender_id
             , ClientSelfLender.client_id
@@ -1825,8 +1752,7 @@ def insert_client_self_lender( client_self_lender:ClientSelfLender):
     sql = """
     INSERT INTO client_self_lender( client_id,start_date,duration,pay_from,monthly_due_date,termination_date,login,pwd,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientSelfLender.client_id
@@ -1947,9 +1873,7 @@ def upsert_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
     UNION ALL
     SELECT 'UPDATE' as ACTION, cc_trans_id
     FROM u
-    ;
-    ;
-"""
+        """
     val = [
             ClientCcTransaction.cc_trans_id
             , ClientCcTransaction.client_id
@@ -1967,8 +1891,7 @@ def insert_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
     sql = """
     INSERT INTO client_cc_transaction( client_id,cc_account_id,transaction_date,transaction_type,transaction_status,credit,debit,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    ;
-"""
+    """
     val = [
             
             ClientCcTransaction.client_id
