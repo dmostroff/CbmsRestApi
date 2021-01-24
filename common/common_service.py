@@ -1,5 +1,8 @@
 from flask import jsonify
+import os
 import json
+from cryptography.fernet import Fernet
+
 
 def init_environ(app, config):
     os.environ['CONNECTION_STRING'] = config['MSSQL']['CONNECTION_STRING']
@@ -36,3 +39,14 @@ def df_to_json_pretty( df):
 
 def json_view( df):
     return jsonify(json.loads(df_to_json(df)) if df is not None else {})
+
+def decrypt( encoded_string):
+    key = os.getenv('KEY')
+    cipher_suite = Fernet(key)
+    return cipher_suite.decrypt( bytes(encoded_string, 'utf-8'))
+
+def encrypt( decoded_string):
+    key = os.getenv('KEY')
+    cipher_suite = Fernet(key)
+    return cipher_suite.encrypt( bytes(decoded_string, 'utf-8'))
+

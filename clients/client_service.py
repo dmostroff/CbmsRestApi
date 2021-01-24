@@ -1,5 +1,7 @@
 import client_repository as cr
+import cc_account_repository as car
 import base_service as bs
+import common_service as cs
 
 #--------------------
 # client_cc_history
@@ -26,7 +28,6 @@ def post_client_cc_history ( client_cc_history:ClientCcHistory):
 def put_client_cc_history (client_cc_history:ClientCcHistory):
     return cr.insert_client_cc_history(client_cc_history)
 
-
 #--------------------
 # client_person
 #--------------------
@@ -52,7 +53,6 @@ def post_client_person ( client_person:ClientPerson):
 def put_client_person (client_person:ClientPerson):
     return cr.insert_client_person(client_person)
 
-
 #--------------------
 # client_creditline_history
 #--------------------
@@ -77,7 +77,6 @@ def post_client_creditline_history ( client_creditline_history:ClientCreditlineH
 @bs.repository_call
 def put_client_creditline_history (client_creditline_history:ClientCreditlineHistory):
     return cr.insert_client_creditline_history(client_creditline_history)
-
 
 #--------------------
 # client_address
@@ -106,30 +105,29 @@ def put_client_address (client_address:ClientAddress):
 
 
 #--------------------
-# client_cc_account
+# cc_account
 #--------------------
-from ClientCcAccount import ClientCcAccount
+from CcAccount import CcAccount
 
 @bs.repository_call
-def get_client_cc_account ():
-    return cr.get_client_cc_account()
+def get_cc_account ():
+    return car.get_cc_account()
 
 @bs.repository_call
-def get_client_cc_account_by_client_id (client_id):
-    return cr.get_client_cc_account_by_client_id(client_id)
+def get_cc_account_by_client_id (client_id):
+    return car.get_by_client_id(client_id)
 
 @bs.repository_call
-def get_client_cc_account_by_id (id):
-    return cr.get_client_cc_account_by_id(id)
+def get_cc_account_by_id (id):
+    return car.get_cc_account_by_id(id)
 
 @bs.repository_call
-def post_client_cc_account ( client_cc_account:ClientCcAccount):
-    return cr.upsert_client_cc_account(client_cc_account)
+def post_cc_account ( cc_account:CcAccount):
+    return car.upsert_cc_account(cc_account)
 
 @bs.repository_call
-def put_client_cc_account (client_cc_account:ClientCcAccount):
-    return cr.insert_client_cc_account(client_cc_account)
-
+def put_cc_account (cc_account:CcAccount):
+    return car.insert_cc_account(cc_account)
 
 #--------------------
 # client_setting
@@ -146,7 +144,8 @@ def get_client_setting_by_client_id (client_id):
 
 @bs.repository_call
 def get_client_setting_by_id (id):
-    return cr.get_client_setting_by_id(id)
+    df = cr.get_client_setting_by_id(id)
+    return df
 
 @bs.repository_call
 def post_client_setting ( client_setting:ClientSetting):
@@ -155,7 +154,6 @@ def post_client_setting ( client_setting:ClientSetting):
 @bs.repository_call
 def put_client_setting (client_setting:ClientSetting):
     return cr.insert_client_setting(client_setting)
-
 
 #--------------------
 # client_bank_account
@@ -181,7 +179,6 @@ def post_client_bank_account ( client_bank_account:ClientBankAccount):
 @bs.repository_call
 def put_client_bank_account (client_bank_account:ClientBankAccount):
     return cr.insert_client_bank_account(client_bank_account)
-
 
 #--------------------
 # client_note

@@ -400,14 +400,7 @@ def update_client_creditline_history( client_creditline_history:ClientCreditline
             , ClientCreditlineHistory.credit_amt
             , ClientCreditlineHistory.credit_status
             , ClientCreditlineHistory.recorded_on
-        
             , ClientCreditlineHistory.creditline_id
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -552,190 +545,178 @@ def update_client_address( client_address:ClientAddress):
             , ClientAddress.valid_from
             , ClientAddress.valid_to
             , ClientAddress.recorded_on
-        
             , ClientAddress.address_id
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
-#######################
-# client_cc_account
-#######################
-import ClientCcAccount
+# #######################
+# # client_cc_account
+# #######################
+# import ClientCcAccount
 
-def get_client_cc_account():
-    sql = """
-    SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
-    FROM client_cc_account
-"""
-    return db.fetchall(sql)
+# def get_client_cc_account():
+#     sql = """
+#     SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+#     FROM client_cc_account
+# """
+#     return db.fetchall(sql)
 
-def get_client_cc_account_by_id(id):
-    sql = """
-    SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
-    FROM client_cc_account
-    WHERE cc_account_id = %s
-"""
-    return db.fetchall(sql, [id])
+# def get_client_cc_account_by_id(id):
+#     sql = """
+#     SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+#     FROM client_cc_account
+#     WHERE cc_account_id = %s
+# """
+#     return db.fetchall(sql, [id])
 
-def get_client_cc_account_by_client_cc_account_id(client_cc_account_id):
-    sql = """
-    SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
-    FROM client_cc_account
-    WHERE client_cc_account_id = %s
-"""
-    return db.fetchall(sql, [client_cc_account_id])
+# def get_client_cc_account_by_client_cc_account_id(client_cc_account_id):
+#     sql = """
+#     SELECT cc_account_id,client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on
+#     FROM client_cc_account
+#     WHERE client_cc_account_id = %s
+# """
+#     return db.fetchall(sql, [client_cc_account_id])
 
-def upsert_client_cc_account( client_cc_account:ClientCcAccount):
-    sql = """
-    WITH t AS (
-        SELECT 
-            %s as cc_account_id
-            , %s as client_id
-            , %s as card_name
-            , %s as card_holder
-            , %s as account
-            , %s as open_date
-            , %s as account_info
-            , %s as cc_login
-            , %s as cc_pwd
-            , %s as cc_status
-            , %s as annual_fee_waived
-            , %s as credit_limit
-            , %s as addtional_card
-            , %s as notes
-            , %s as ccaccount_info
-            , %s as recorded_on
-    ),
-    u AS (
-        UPDATE client_cc_account
-        SET 
-            client_id=t.client_id
-            , card_name=t.card_name
-            , card_holder=t.card_holder
-            , account=t.account
-            , open_date=t.open_date
-            , account_info=t.account_info
-            , cc_login=t.cc_login
-            , cc_pwd=t.cc_pwd
-            , cc_status=t.cc_status
-            , annual_fee_waived=t.annual_fee_waived
-            , credit_limit=t.credit_limit
-            , addtional_card=t.addtional_card
-            , notes=t.notes
-            , ccaccount_info=t.ccaccount_info
-            , recorded_on=t.recorded_on
-        FROM t
-        WHERE client_cc_account.cc_account_id = t.cc_account_id
-        RETURNING cc_account_id
-    ),
-    i AS (
-        INSERT INTO client_cc_account( client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
-        SELECT 
-            t.client_id
-            , t.card_name
-            , t.card_holder
-            , t.account
-            , t.open_date
-            , t.account_info
-            , t.cc_login
-            , t.cc_pwd
-            , t.cc_status
-            , t.annual_fee_waived
-            , t.credit_limit
-            , t.addtional_card
-            , t.notes
-            , t.ccaccount_info
-            , t.recorded_on
-        FROM t
-        WHERE NOT EXISTS ( SELECT 1 FROM u)
-    )
-    SELECT 'INSERT' as ACTION, cc_account_id
-    FROM i
-    UNION ALL
-    SELECT 'UPDATE' as ACTION, cc_account_id
-    FROM u
-        """
-    val = [
-            ClientCcAccount.cc_account_id
-            , ClientCcAccount.client_id
-            , ClientCcAccount.card_name
-            , ClientCcAccount.card_holder
-            , ClientCcAccount.account
-            , ClientCcAccount.open_date
-            , ClientCcAccount.account_info
-            , ClientCcAccount.cc_login
-            , ClientCcAccount.cc_pwd
-            , ClientCcAccount.cc_status
-            , ClientCcAccount.annual_fee_waived
-            , ClientCcAccount.credit_limit
-            , ClientCcAccount.addtional_card
-            , ClientCcAccount.notes
-            , ClientCcAccount.ccaccount_info
-            , ClientCcAccount.recorded_on
-        ]
-    return db.execute(sql, val)
+# def upsert_client_cc_account( client_cc_account:ClientCcAccount):
+#     sql = """
+#     WITH t AS (
+#         SELECT 
+#             %s as cc_account_id
+#             , %s as client_id
+#             , %s as card_name
+#             , %s as card_holder
+#             , %s as account
+#             , %s as open_date
+#             , %s as account_info
+#             , %s as cc_login
+#             , %s as cc_pwd
+#             , %s as cc_status
+#             , %s as annual_fee_waived
+#             , %s as credit_limit
+#             , %s as addtional_card
+#             , %s as notes
+#             , %s as ccaccount_info
+#             , %s as recorded_on
+#     ),
+#     u AS (
+#         UPDATE client_cc_account
+#         SET 
+#             client_id=t.client_id
+#             , card_name=t.card_name
+#             , card_holder=t.card_holder
+#             , account=t.account
+#             , open_date=t.open_date
+#             , account_info=t.account_info
+#             , cc_login=t.cc_login
+#             , cc_pwd=t.cc_pwd
+#             , cc_status=t.cc_status
+#             , annual_fee_waived=t.annual_fee_waived
+#             , credit_limit=t.credit_limit
+#             , addtional_card=t.addtional_card
+#             , notes=t.notes
+#             , ccaccount_info=t.ccaccount_info
+#             , recorded_on=t.recorded_on
+#         FROM t
+#         WHERE client_cc_account.cc_account_id = t.cc_account_id
+#         RETURNING cc_account_id
+#     ),
+#     i AS (
+#         INSERT INTO client_cc_account( client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
+#         SELECT 
+#             t.client_id
+#             , t.card_name
+#             , t.card_holder
+#             , t.account
+#             , t.open_date
+#             , t.account_info
+#             , t.cc_login
+#             , t.cc_pwd
+#             , t.cc_status
+#             , t.annual_fee_waived
+#             , t.credit_limit
+#             , t.addtional_card
+#             , t.notes
+#             , t.ccaccount_info
+#             , t.recorded_on
+#         FROM t
+#         WHERE NOT EXISTS ( SELECT 1 FROM u)
+#     )
+#     SELECT 'INSERT' as ACTION, cc_account_id
+#     FROM i
+#     UNION ALL
+#     SELECT 'UPDATE' as ACTION, cc_account_id
+#     FROM u
+#         """
+#     val = [
+#             ClientCcAccount.cc_account_id
+#             , ClientCcAccount.client_id
+#             , ClientCcAccount.card_name
+#             , ClientCcAccount.card_holder
+#             , ClientCcAccount.account
+#             , ClientCcAccount.open_date
+#             , ClientCcAccount.account_info
+#             , ClientCcAccount.cc_login
+#             , ClientCcAccount.cc_pwd
+#             , ClientCcAccount.cc_status
+#             , ClientCcAccount.annual_fee_waived
+#             , ClientCcAccount.credit_limit
+#             , ClientCcAccount.addtional_card
+#             , ClientCcAccount.notes
+#             , ClientCcAccount.ccaccount_info
+#             , ClientCcAccount.recorded_on
+#         ]
+#     return db.execute(sql, val)
 
-def insert_client_cc_account( client_cc_account:ClientCcAccount):
-    sql = """
-    INSERT INTO client_cc_account( client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
-    val = [
+# def insert_client_cc_account( client_cc_account:ClientCcAccount):
+#     sql = """
+#     INSERT INTO client_cc_account( client_id,card_name,card_holder,account,open_date,account_info,cc_login,cc_pwd,cc_status,annual_fee_waived,credit_limit,addtional_card,notes,ccaccount_info,recorded_on)
+#     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+#     """
+#     val = [
             
-            ClientCcAccount.client_id
-            , ClientCcAccount.card_name
-            , ClientCcAccount.card_holder
-            , ClientCcAccount.account
-            , ClientCcAccount.open_date
-            , ClientCcAccount.account_info
-            , ClientCcAccount.cc_login
-            , ClientCcAccount.cc_pwd
-            , ClientCcAccount.cc_status
-            , ClientCcAccount.annual_fee_waived
-            , ClientCcAccount.credit_limit
-            , ClientCcAccount.addtional_card
-            , ClientCcAccount.notes
-            , ClientCcAccount.ccaccount_info
-            , ClientCcAccount.recorded_on
-        ]
-    return db.execute(sql, val)
+#             ClientCcAccount.client_id
+#             , ClientCcAccount.card_name
+#             , ClientCcAccount.card_holder
+#             , ClientCcAccount.account
+#             , ClientCcAccount.open_date
+#             , ClientCcAccount.account_info
+#             , ClientCcAccount.cc_login
+#             , ClientCcAccount.cc_pwd
+#             , ClientCcAccount.cc_status
+#             , ClientCcAccount.annual_fee_waived
+#             , ClientCcAccount.credit_limit
+#             , ClientCcAccount.addtional_card
+#             , ClientCcAccount.notes
+#             , ClientCcAccount.ccaccount_info
+#             , ClientCcAccount.recorded_on
+#         ]
+#     return db.execute(sql, val)
 
-# this has a flaw in loop.index > 2
-def update_client_cc_account( client_cc_account:ClientCcAccount):
-    sql = """
-    UPDATE client_cc_account
-    SET client_id = %s, card_name = %s, card_holder = %s, account = %s, open_date = %s, account_info = %s, cc_login = %s, cc_pwd = %s, cc_status = %s, annual_fee_waived = %s, credit_limit = %s, addtional_card = %s, notes = %s, ccaccount_info = %s, recorded_on = %s
-    WHERE cc_account_id = %s
-"""
-    val = [ClientCcAccount.client_id
-            , ClientCcAccount.card_name
-            , ClientCcAccount.card_holder
-            , ClientCcAccount.account
-            , ClientCcAccount.open_date
-            , ClientCcAccount.account_info
-            , ClientCcAccount.cc_login
-            , ClientCcAccount.cc_pwd
-            , ClientCcAccount.cc_status
-            , ClientCcAccount.annual_fee_waived
-            , ClientCcAccount.credit_limit
-            , ClientCcAccount.addtional_card
-            , ClientCcAccount.notes
-            , ClientCcAccount.ccaccount_info
-            , ClientCcAccount.recorded_on
-            , ClientCcAccount.cc_account_id
-        ]
-    return db.execute(sql, val)            
+# # this has a flaw in loop.index > 2
+# def update_client_cc_account( client_cc_account:ClientCcAccount):
+#     sql = """
+#     UPDATE client_cc_account
+#     SET client_id = %s, card_name = %s, card_holder = %s, account = %s, open_date = %s, account_info = %s, cc_login = %s, cc_pwd = %s, cc_status = %s, annual_fee_waived = %s, credit_limit = %s, addtional_card = %s, notes = %s, ccaccount_info = %s, recorded_on = %s
+#     WHERE cc_account_id = %s
+# """
+#     val = [ClientCcAccount.client_id
+#             , ClientCcAccount.card_name
+#             , ClientCcAccount.card_holder
+#             , ClientCcAccount.account
+#             , ClientCcAccount.open_date
+#             , ClientCcAccount.account_info
+#             , ClientCcAccount.cc_login
+#             , ClientCcAccount.cc_pwd
+#             , ClientCcAccount.cc_status
+#             , ClientCcAccount.annual_fee_waived
+#             , ClientCcAccount.credit_limit
+#             , ClientCcAccount.addtional_card
+#             , ClientCcAccount.notes
+#             , ClientCcAccount.ccaccount_info
+#             , ClientCcAccount.recorded_on
+#             , ClientCcAccount.cc_account_id
+#         ]
+#     return db.execute(sql, val)            
 
 #######################
 # client_setting
@@ -817,7 +798,6 @@ def insert_client_setting( client_setting:ClientSetting):
     VALUES (%s, %s, %s, %s)
     """
     val = [
-            
             ClientSetting.client_id
             , ClientSetting.prefix
             , ClientSetting.keyname
@@ -836,12 +816,7 @@ def update_client_setting( client_setting:ClientSetting):
             , ClientSetting.prefix
             , ClientSetting.keyname
             , ClientSetting.keyvalue
-        
             , ClientSetting.client_setting_id
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -949,7 +924,6 @@ def insert_client_bank_account( client_bank_account:ClientBankAccount):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientBankAccount.client_id
             , ClientBankAccount.bank_name
             , ClientBankAccount.account_num
@@ -980,18 +954,7 @@ def update_client_bank_account( client_bank_account:ClientBankAccount):
             , ClientBankAccount.debit_card
             , ClientBankAccount.debit_info
             , ClientBankAccount.recorded_on
-        
             , ClientBankAccount.bank_account_id
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1079,7 +1042,6 @@ def insert_client_note( client_note:ClientNote):
     VALUES (%s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientNote.client_id
             , ClientNote.note
             , ClientNote.tags
@@ -1100,13 +1062,7 @@ def update_client_note( client_note:ClientNote):
             , ClientNote.tags
             , ClientNote.recorded_by
             , ClientNote.recorded_on
-        
             , ClientNote.client_note_id
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1214,7 +1170,6 @@ def insert_client_cc_points( client_cc_points:ClientCcPoints):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientCcPoints.client_id
             , ClientCcPoints.cc_account_id
             , ClientCcPoints.sold_to
@@ -1245,18 +1200,7 @@ def update_client_cc_points( client_cc_points:ClientCcPoints):
             , ClientCcPoints.pwd
             , ClientCcPoints.source_info
             , ClientCcPoints.recorded_on
-        
             , ClientCcPoints.cc_points_id
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1356,7 +1300,6 @@ def insert_client_charges( client_charges:ClientCharges):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientCharges.client_id
             , ClientCharges.charge_goal
             , ClientCharges.charged
@@ -1383,16 +1326,7 @@ def update_client_charges( client_charges:ClientCharges):
             , ClientCharges.due_on_day
             , ClientCharges.charge_info
             , ClientCharges.recorded_on
-        
             , ClientCharges.charge_id
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1484,7 +1418,6 @@ def insert_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanc
     VALUES (%s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientCcBalanceTransfer.client_id
             , ClientCcBalanceTransfer.cc_account_id
             , ClientCcBalanceTransfer.due_date
@@ -1507,14 +1440,7 @@ def update_client_cc_balance_transfer( client_cc_balance_transfer:ClientCcBalanc
             , ClientCcBalanceTransfer.total
             , ClientCcBalanceTransfer.credit_line
             , ClientCcBalanceTransfer.recorded_on
-        
             , ClientCcBalanceTransfer.bal_id
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1614,7 +1540,6 @@ def insert_client_cc_action( client_cc_action:ClientCcAction):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientCcAction.client_id
             , ClientCcAction.cc_account_id
             , ClientCcAction.ccaction
@@ -1641,16 +1566,7 @@ def update_client_cc_action( client_cc_action:ClientCcAction):
             , ClientCcAction.due_date
             , ClientCcAction.details
             , ClientCcAction.recorded_on
-        
             , ClientCcAction.cc_action_id
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1754,7 +1670,6 @@ def insert_client_self_lender( client_self_lender:ClientSelfLender):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientSelfLender.client_id
             , ClientSelfLender.start_date
             , ClientSelfLender.duration
@@ -1783,17 +1698,7 @@ def update_client_self_lender( client_self_lender:ClientSelfLender):
             , ClientSelfLender.login
             , ClientSelfLender.pwd
             , ClientSelfLender.recorded_on
-        
             , ClientSelfLender.self_lender_id
-            
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
 
@@ -1893,7 +1798,6 @@ def insert_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
     val = [
-            
             ClientCcTransaction.client_id
             , ClientCcTransaction.cc_account_id
             , ClientCcTransaction.transaction_date
@@ -1920,15 +1824,6 @@ def update_client_cc_transaction( client_cc_transaction:ClientCcTransaction):
             , ClientCcTransaction.credit
             , ClientCcTransaction.debit
             , ClientCcTransaction.recorded_on
-        
             , ClientCcTransaction.cc_trans_id
-            
-            
-            
-            
-            
-            
-            
-                        
         ]
     return db.execute(sql, val)
