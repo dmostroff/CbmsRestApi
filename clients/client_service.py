@@ -1,5 +1,4 @@
 import client_repository as cr
-import cc_account_repository as car
 import base_service as bs
 import common_service as cs
 
@@ -103,31 +102,6 @@ def post_client_address ( client_address:ClientAddress):
 def put_client_address (client_address:ClientAddress):
     return cr.insert_client_address(client_address)
 
-
-#--------------------
-# cc_account
-#--------------------
-from CcAccount import CcAccount
-
-@bs.repository_call
-def get_cc_account ():
-    return car.get_cc_account()
-
-@bs.repository_call
-def get_cc_account_by_client_id (client_id):
-    return car.get_by_client_id(client_id)
-
-@bs.repository_call
-def get_cc_account_by_id (id):
-    return car.get_cc_account_by_id(id)
-
-@bs.repository_call
-def post_cc_account ( cc_account:CcAccount):
-    return car.upsert_cc_account(cc_account)
-
-@bs.repository_call
-def put_cc_account (cc_account:CcAccount):
-    return car.insert_cc_account(cc_account)
 
 #--------------------
 # client_setting

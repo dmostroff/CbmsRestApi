@@ -8,13 +8,15 @@ from typing import Optional
 from enum import Enum
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 
 rootDir = os.path.dirname(__file__)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-for subdir in ['common', 'database', 'models', 'clients']:
+for subdir in ['common', 'database', 'resources', 'models', 'clients']:
     sys.path.append( os.path.join(rootDir, subdir))
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 origins = [
@@ -31,11 +33,22 @@ origins = [
 # )
 
 import client_service as cs
-import client_resource as cr
+from clientperson_resource import ClientPersons, ClientPerson
+from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount
+
 
 @app.route('/', methods=['GET'])
 def read_main():
     return { 'msg': 'Welcome to CBMS'}
+
+#-- ClientPerson
+api.add_resource( ClientPersons, '/clients')
+api.add_resource( ClientPerson, '/client/person/<int:id>')
+api.add_resource( CcAccounts, '/ccaccounts')
+api.add_resource( CcAccountsByClient, '/client/<int:client_id>/ccaccount')
+api.add_resource( CcAccount, '/ccaccount/<int:id>')
+
+
 
 #-- ClientCcHistory
 from ClientCcHistory import ClientCcHistory
@@ -47,7 +60,7 @@ def get_client_cc_history ():
 def get_client_cc_history_by_client_id (client_id):
     return cs.get_client_cc_history_by_client_id(client_id)
 
-@app.route('/client/cc_history/{id}', methods=['GET'])
+@app.route('/client/cc_history/<id>', methods=['GET'])
 def get_client_cc_history_by_id (id):
     return cs.get_client_cc_history_by_id(id)
 
@@ -56,23 +69,21 @@ def post_client_cc_history ( client_cc_history:ClientCcHistory):
     return cs.upsert_client_cc_history(client_cc_history)
 
 
-#-- ClientPerson
-from ClientPerson import ClientPerson
-@app.route('/client/person', methods=['GET'])
-def get_client_person ():
-    return cs.get_client_person()
+# @app.route('/client/person', methods=['GET'])
+# def get_client_person ():
+#     return cs.get_client_person()
 
-@app.route('/client/{client_id}/person', methods=['GET'])
-def get_client_person_by_client_id (client_id):
-    return cs.get_client_person_by_client_id(client_id)
+# @app.route('/client/<client_id>/person', methods=['GET'])
+# def get_client_person_by_client_id (client_id):
+#     return cs.get_client_person_by_client_id(client_id)
 
-@app.route('/client/person/{id}', methods=['GET'])
-def get_client_person_by_id (id):
-    return cs.get_client_person_by_id(id)
+# @app.route('/client/person/<id>', methods=['GET'])
+# def get_client_person_by_id (id):
+#     return cs.get_client_person_by_id(id)
 
-@app.route('/client/person', methods=['POST'])
-def post_client_person ( client_person:ClientPerson):
-    return cs.upsert_client_person(client_person)
+# @app.route('/client/person', methods=['POST'])
+# def post_client_person ( client_person:ClientPerson):
+#     return cs.upsert_client_person(client_person)
 
 
 #-- ClientCreditlineHistory
@@ -85,7 +96,7 @@ def get_client_creditline_history ():
 def get_client_creditline_history_by_client_id (client_id):
     return cs.client_creditline_history_by_client_id(client_id)
 
-@app.route('/client/creditline_history/{id}', methods=['GET'])
+@app.route('/client/creditline_history/<id>', methods=['GET'])
 def get_client_creditline_history_by_id (id):
     return cs.client_creditline_history_by_id(id)
 
@@ -104,7 +115,7 @@ def get_client_address ():
 def get_client_address_by_client_id (client_id):
     return cs.client_address_by_client_id(client_id)
 
-@app.route('/client/address/{id}', methods=['GET'])
+@app.route('/client/address/<id>', methods=['GET'])
 def get_client_address_by_id (id):
     return cs.client_address_by_id(id)
 
@@ -123,7 +134,7 @@ def get_cc_account ():
 def get_cc_account_by_client_id (client_id):
     return cs.cc_account_by_client_id(client_id)
 
-@app.route('/client/cc_account/{id}', methods=['GET'])
+@app.route('/client/cc_account/<id>', methods=['GET'])
 def get_cc_account_by_id (id):
     return cs.cc_account_by_id(id)
 
@@ -142,7 +153,7 @@ def get_client_setting ():
 def get_client_setting_by_client_id (client_id):
     return cs.client_setting_by_client_id(client_id)
 
-@app.route('/client/setting/{id}', methods=['GET'])
+@app.route('/client/setting/<id>', methods=['GET'])
 def get_client_setting_by_id (id):
     return cs.client_setting_by_id(id)
 
@@ -161,7 +172,7 @@ def get_client_bank_account ():
 def get_client_bank_account_by_client_id (client_id):
     return cs.client_bank_account_by_client_id(client_id)
 
-@app.route('/client/bank_account/{id}', methods=['GET'])
+@app.route('/client/bank_account/<id>', methods=['GET'])
 def get_client_bank_account_by_id (id):
     return cs.client_bank_account_by_id(id)
 
@@ -180,7 +191,7 @@ def get_client_note ():
 def get_client_note_by_client_id (client_id):
     return cs.client_note_by_client_id(client_id)
 
-@app.route('/client/note/{id}', methods=['GET'])
+@app.route('/client/note/<id>', methods=['GET'])
 def get_client_note_by_id (id):
     return cs.client_note_by_id(id)
 
@@ -199,7 +210,7 @@ def get_client_cc_points ():
 def get_client_cc_points_by_client_id (client_id):
     return cs.client_cc_points_by_client_id(client_id)
 
-@app.route('/client/cc_points/{id}', methods=['GET'])
+@app.route('/client/cc_points/<id>', methods=['GET'])
 def get_client_cc_points_by_id (id):
     return cs.client_cc_points_by_id(id)
 
@@ -218,7 +229,7 @@ def get_client_charges ():
 def get_client_charges_by_client_id (client_id):
     return cs.client_charges_by_client_id(client_id)
 
-@app.route('/client/charges/{id}', methods=['GET'])
+@app.route('/client/charges/<id>', methods=['GET'])
 def get_client_charges_by_id (id):
     return cs.client_charges_by_id(id)
 
@@ -237,7 +248,7 @@ def get_client_cc_balance_transfer ():
 def get_client_cc_balance_transfer_by_client_id (client_id):
     return cs.client_cc_balance_transfer_by_client_id(client_id)
 
-@app.route('/client/cc_balance_transfer/{id}', methods=['GET'])
+@app.route('/client/cc_balance_transfer/<id>', methods=['GET'])
 def get_client_cc_balance_transfer_by_id (id):
     return cs.client_cc_balance_transfer_by_id(id)
 
@@ -256,7 +267,7 @@ def get_client_cc_action ():
 def get_client_cc_action_by_client_id (client_id):
     return cs.client_cc_action_by_client_id(client_id)
 
-@app.route('/client/cc_action/{id}', methods=['GET'])
+@app.route('/client/cc_action/<id>', methods=['GET'])
 def get_client_cc_action_by_id (id):
     return cs.client_cc_action_by_id(id)
 
@@ -275,7 +286,7 @@ def get_client_self_lender ():
 def get_client_self_lender_by_client_id (client_id):
     return cs.client_self_lender_by_client_id(client_id)
 
-@app.route('/client/self_lender/{id}', methods=['GET'])
+@app.route('/client/self_lender/<id>', methods=['GET'])
 def get_client_self_lender_by_id (id):
     return cs.client_self_lender_by_id(id)
 
@@ -294,7 +305,7 @@ def get_client_cc_transaction ():
 def get_client_cc_transaction_by_client_id (client_id):
     return cs.client_cc_transaction_by_client_id(client_id)
 
-@app.route('/client/cc_transaction/{id}', methods=['GET'])
+@app.route('/client/cc_transaction/<id>', methods=['GET'])
 def get_client_cc_transaction_by_id (id):
     return cs.client_cc_transaction_by_id(id)
 
