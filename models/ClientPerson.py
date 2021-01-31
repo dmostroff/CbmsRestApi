@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
+print( "ClientPerson model")
 class ClientPerson(BaseModel):
     client_id: int
     last_name: str

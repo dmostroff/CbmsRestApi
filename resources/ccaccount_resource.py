@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 import cc_account_service as cas
 
+print( "in ccaccount_resource")
 ccAccount = {}
 class CcAccounts(Resource):
     def get(self):

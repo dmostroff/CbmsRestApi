@@ -14,3 +14,5 @@ class ClientPerson(Resource):
     def put(self, id):
         clientPerson[id] = request.form['clientPerson']
         return {'client_id': clientPerson[id]}
+
+print( 'clientperson_resource')

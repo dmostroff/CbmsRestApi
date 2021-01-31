@@ -27,9 +27,9 @@ def db_connector( func):
     return with_connection_
     
 
-@db_connector
-def get_sql_data_source_name( conn, arg=None, arg2=None):
-    return conn.getinfo(pyodbc.SQL_DATA_SOURCE_NAME)
+# @db_connector
+# def get_sql_data_source_name( conn, arg=None, arg2=None):
+#     return conn.getinfo(pyodbc.SQL_DATA_SOURCE_NAME)
 
 def get_server_name():
     return fetchone("SELECT inet_server_addr()")[0]
@@ -108,3 +108,5 @@ def does_exist(conn, sql, args=None):
     except Exception as ex:
         print( sys.exc_info()[1])
         raise ex
+
+print( 'pgsql_db_layer')

@@ -150,12 +150,12 @@ def get_cc_account_by_id(id):
 """
     return db.fetchall(sql, [id])
 
-def get_cc_account_by_cc_account_id(cc_account_id):
+def get_cc_account_by_client_id(client_id):
     sql = get_cc_account_basesql()
     sql += """
-    WHERE cc_account_id = %s
+    WHERE client_id = %s
 """
-    return db.fetchall(sql, [cc_account_id])
+    return db.fetchall(sql, [client_id])
 
 def upsert_cc_account( cc_account:CcAccount):
     sql = """

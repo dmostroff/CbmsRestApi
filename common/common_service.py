@@ -50,3 +50,4 @@ def encrypt( decoded_string):
     cipher_suite = Fernet(key)
     return cipher_suite.encrypt( bytes(decoded_string, 'utf-8'))
 
+print( 'common_service')
