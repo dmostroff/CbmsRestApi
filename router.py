@@ -1,17 +1,23 @@
-from cbmsapi import app
-
 import os
 import sys
 from typing import Optional
 import socket
 
+from flask_cors import CORS
 from flask_restful import Api
+
+if 'APACHE_RUN_DIR' in os.environ.keys():
+    from cbmsapi import app
+else:
+    from flask import current_app as app
+
+CORS(app)
 api = Api(app)
 
 print( 'import client_service')
 import client_service as cs
 print( 'import clientperson_resource')
-from clientperson_resource import ClientPersons, ClientPerson
+from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson
 print( 'import ccaccount_resource')
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount
 print( 'import DONE')
@@ -25,13 +31,14 @@ def ping():
     return { 'ping': socket.gethostname()}
 
 #-- ClientPerson
+api.add_resource( ClientCreditSummary, '/creditsummary')
 api.add_resource( ClientPersons, '/clients')
 api.add_resource( ClientPerson, '/client/person/<int:id>')
 api.add_resource( CcAccounts, '/ccaccounts')
 api.add_resource( CcAccountsByClient, '/client/<int:client_id>/ccaccount')
 api.add_resource( CcAccount, '/ccaccount/<int:id>')
 
-print( 'app DONE')
+print( 'router DONE')
 
 
 #-- ClientCcHistory

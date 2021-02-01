@@ -3,6 +3,13 @@ import base_service as bs
 import common_service as cs
 
 #--------------------
+# dashboard
+#--------------------
+@bs.repository_call
+def get_client_credit_summary():
+    return cr.get_client_credit_summary()
+    
+#--------------------
 # client_cc_history
 #--------------------
 from ClientCcHistory import ClientCcHistory
@@ -33,8 +40,8 @@ def put_client_cc_history (client_cc_history:ClientCcHistory):
 from ClientPerson import ClientPerson
 
 @bs.repository_call
-def get_client_person ():
-    return cr.get_client_person()
+def get_client_persons ():
+    return cr.get_client_persons()
 
 @bs.repository_call
 def get_client_person_by_client_id (client_id):

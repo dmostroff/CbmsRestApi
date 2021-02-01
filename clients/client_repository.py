@@ -2,32 +2,48 @@ import pgsql_db_layer as db
 
 
 #######################
+# client dashboard
+#######################
+def get_client_credit_summary():
+    sql = """
+    SELECT cp.client_id
+        , MIN(TRIM( CONCAT(cp.last_name, ', ', cp.first_name, ' ', cp.middle_name))) as client_name
+        , '' as address
+        , MIN(cp.email) AS email
+        , MIN(cp.phone) as phone
+        , MIN(COALESCE(cca.open_date, '1900-01-01')) as start_date
+        , CAST( SUM( cca.credit_limit) AS DECIMAL(12,2)) AS total_credit_limit
+    FROM client.client_person cp
+        LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.client_id
+    GROUP BY cp.client_id
+    ORDER BY start_date, client_name
+"""
+    return db.fetchall(sql)
+
+
+
+#######################
 # client_person
 #######################
 from ClientPerson import ClientPerson
 
-def get_client_person():
+def get_client_person_base_sql():
     sql = """
     SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
     FROM client_person
 """
+    return sql
+
+def get_client_persons():
+    sql = get_client_person_base_sql()
     return db.fetchall(sql)
 
 def get_client_person_by_id(id):
-    sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
-    FROM client_person
+    sql = get_client_person_base_sql()
+    sql += """
     WHERE client_id = %s
 """
     return db.fetchall(sql, [id])
-
-def get_client_person_by_client_id(client_id):
-    sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
-    FROM client_person
-    WHERE client_id = %s
-"""
-    return db.fetchall(sql, [client_id])
 
 def upsert_client_person( client_person:ClientPerson):
     sql = """
