@@ -195,4 +195,4 @@ def update_client_person( client_person:ClientPerson):
         ]
     return db.execute(sql, val)
 
-print( 'client_repository')
+# print( 'client_repository')

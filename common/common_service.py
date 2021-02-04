@@ -13,7 +13,7 @@ def init_environ(app, config):
     # fix up the ADD_TO_REF_TABLES to be 1 or 0
     os.environ['ADD_TO_REF_TABLES'] = '1' if os.getenv('ADD_TO_REF_TABLES') == 'True' else '0'
     app.config['ALLOWED_EXTENSIONS'] = { 'xlsx', 'csv' }
-    app.config['SECRET_KEY'] = config['System']['SECRET_KEY']
+    # app.config['SECRET_KEY'] = config['System']['SECRET_KEY']
 
 def json_rc_msg( rc = 0, msg = '', data=None, retstatus=200):
     retval = { 'rc': rc }
@@ -50,4 +50,4 @@ def encrypt( decoded_string):
     cipher_suite = Fernet(key)
     return cipher_suite.encrypt( bytes(decoded_string, 'utf-8'))
 
-print( 'common_service')
+# print( 'common_service')

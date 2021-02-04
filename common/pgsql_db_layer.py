@@ -109,4 +109,4 @@ def does_exist(conn, sql, args=None):
         print( sys.exc_info()[1])
         raise ex
 
-print( 'pgsql_db_layer')
+# print( 'pgsql_db_layer')

@@ -14,21 +14,29 @@ else:
 CORS(app)
 api = Api(app)
 
-print( 'import client_service')
-import client_service as cs
-print( 'import clientperson_resource')
+from login_resource import Login
+from auth_user_resource import AuthUsers, AuthUser
+from auth_role_resource import AuthRoles
 from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson
-print( 'import ccaccount_resource')
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount
-print( 'import DONE')
 
 @app.route('/', methods=['GET'])
 def read_main():
-    return { 'msg': 'Welcome to CBMS'}
+    return { 'msg': 'Welcome to CBMS', 'version': os.getenv('API_VERSION')}
 
 @app.route('/ping', methods=['GET'])
 def ping():
     return { 'ping': socket.gethostname()}
+
+@app.route('/version', methods=['GET'])
+def version():
+    return { 'version': os.getenv('API_VERSION')}
+
+#-- Login
+api.add_resource( Login, '/login')
+api.add_resource( AuthUsers, '/auth/users')
+api.add_resource( AuthUser, '/auth/user/<int:id>')
+api.add_resource( AuthRoles, '/auth/roles')
 
 #-- ClientPerson
 api.add_resource( ClientCreditSummary, '/creditsummary')
