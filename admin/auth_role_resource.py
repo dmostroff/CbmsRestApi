@@ -1,18 +1,25 @@
+from flask import request
 from flask_restful import Resource
 import auth_role_service as ars
+from admin_transform import AuthRoleJsonToModel
 
-authRole = {}
 class AuthRoles(Resource):
     def get(self):
         return ars.get_auth_roles()
 
 class AuthRole(Resource):
     def get(self, id):
-        return ars.get_auth_role(id)
+        return ars.get_auth_role_by_id(id)
 
-    def put(self, id):
-        authRole[id] = request.form['authRole']
-        return {'authRole_id': authRole[id]}
+    def post(self):
+        auth_role = AuthRoleJsonToModel(request.get_json())
+        retval = ars.upsert_auth_role( auth_role)
+        print( retval)
+        return retval
+        
+        # return auth_role.json()
+        # authRole = request.form['authRole']
+        # return ars.upsert_auth_role( authRole)
 
 class AuthPermissions(Resource):
     def get(self):
@@ -22,7 +29,7 @@ class AuthPermission(Resource):
     def get(self, id):
         return ars.get_auth_permission(id)
 
-    def put(self, id):
+    def post(self, id):
         authPermission[id] = request.form['authPermission']
         return {'authPermission_id': authPermission[id]}
 
@@ -34,6 +41,6 @@ class AuthRolePermission(Resource):
     def get(self, id):
         return ars.get_auth_role_permission(id)
 
-    def put(self, id):
+    def post(self, id):
         authRolePermission[id] = request.form['authRolePermission']
         return {'authRolePermission_id': authRolePermission[id]}

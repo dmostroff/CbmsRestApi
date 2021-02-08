@@ -1,10 +1,9 @@
 import pgsql_db_layer as db
 
-
 #######################
 # cc_account_promo
 #######################
-import CcAccountPromo
+from CcAccountPromoModel import CcAccountPromoModel
 
 def get_cc_account_promo_basesql():
     sql = """
@@ -31,7 +30,7 @@ def get_cc_account_promo_by_client_id(client_id):
 """
     return db.fetchall(sql, [client_id])
 
-def upsert_cc_account_promo( cc_account_promo:CcAccountPromo):
+def upsert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
     sql = """
     WITH t AS (
         SELECT 
@@ -91,7 +90,7 @@ def upsert_cc_account_promo( cc_account_promo:CcAccountPromo):
         ]
     return db.execute(sql, val)
 
-def insert_cc_account_promo( cc_account_promo:CcAccountPromo):
+def insert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
     sql = """
     INSERT INTO cc_account_promo( cc_account_id,offer,loan_amt,bal_transfer_date,bal_transfer_amt,promo_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -110,7 +109,7 @@ def insert_cc_account_promo( cc_account_promo:CcAccountPromo):
     return db.execute(sql, val)
 
 # this has a flaw in loop.index > 2
-def update_cc_account_promo( cc_account_promo:CcAccountPromo):
+def update_cc_account_promo( cc_account_promo:CcAccountPromoModel):
     sql = """
     UPDATE cc_account_promo
     SET cc_account_id = %s, offer = %s, loan_amt = %s, bal_transfer_date = %s, bal_transfer_amt = %s, promo_info = %s, recorded_on = %s
@@ -130,7 +129,7 @@ def update_cc_account_promo( cc_account_promo:CcAccountPromo):
 #######################
 # cc_account
 #######################
-import CcAccount
+from CcAccountModel import CcAccountModel
 
 def get_cc_account_basesql():
     sql = """
@@ -157,7 +156,7 @@ def get_cc_account_by_client_id(client_id):
 """
     return db.fetchall(sql, [client_id])
 
-def upsert_cc_account( cc_account:CcAccount):
+def upsert_cc_account( cc_account:CcAccountModel):
     sql = """
     WITH t AS (
         SELECT 
@@ -257,7 +256,7 @@ def upsert_cc_account( cc_account:CcAccount):
         ]
     return db.execute(sql, val)
 
-def insert_cc_account( cc_account:CcAccount):
+def insert_cc_account( cc_account:CcAccountModel):
     sql = """
     INSERT INTO cc_account( cc_card_id,client_id,card_name,card_holder,open_date,account_info,cc_login,cc_status,annual_fee_waived,credit_limit,last_checked,last_charge,addtional_card,balance_transfer,notes,ccaccount_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -286,7 +285,7 @@ def insert_cc_account( cc_account:CcAccount):
     return db.execute(sql, val)
 
 # this has a flaw in loop.index > 2
-def update_cc_account( cc_account:CcAccount):
+def update_cc_account( cc_account:CcAccountModel):
     sql = """
     UPDATE cc_account
     SET cc_card_id = %s, client_id = %s, card_name = %s, card_holder = %s, open_date = %s, account_info = %s, cc_login = %s, cc_status = %s, annual_fee_waived = %s, credit_limit = %s, last_checked = %s, last_charge = %s, addtional_card = %s, balance_transfer = %s, notes = %s, ccaccount_info = %s, recorded_on = %s

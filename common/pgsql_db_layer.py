@@ -65,11 +65,14 @@ def read_sql_query(conn, sql, args=None):
 
 @db_connector
 def fetchall(conn, sql, args=None):
-    if args is None:
-        return pdsql.read_sql( sql, conn)
-    sql_params = args if isinstance(args, list) else [args]
     try:
-        return  pdsql.read_sql( sql, conn, params=sql_params)
+        if args is None:
+            retval = pdsql.read_sql( sql, conn)
+        else:
+            sql_params = args if isinstance(args, list) else [args]
+            retval = pdsql.read_sql( sql, conn, params=sql_params)
+        conn.commit()
+        return retval
     except Exception as ex:
         print( sys.exc_info()[1])
         raise ex

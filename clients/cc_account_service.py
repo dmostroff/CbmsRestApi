@@ -4,7 +4,7 @@ import base_service as bs
 #--------------------
 # cc_account
 #--------------------
-from CcAccount import CcAccount
+from CcAccountModel import CcAccountModel
 
 @bs.repository_call
 def get_cc_account ():
@@ -19,17 +19,17 @@ def get_cc_account_by_id (id):
     return car.get_cc_account_by_id(id)
 
 @bs.repository_call
-def post_cc_account ( cc_account:CcAccount):
+def post_cc_account ( cc_account:CcAccountModel):
     return car.upsert_cc_account(cc_account)
 
 @bs.repository_call
-def put_cc_account (cc_account:CcAccount):
+def put_cc_account (cc_account:CcAccountModel):
     return car.insert_cc_account(cc_account)
 
 #--------------------
 # cc_account_promo
 #--------------------
-from CcAccountPromo import CcAccountPromo
+from CcAccountPromoModel import CcAccountPromoModel
 
 @bs.repository_call
 def get_cc_account_promo ():
@@ -44,11 +44,11 @@ def get_cc_account_promo_by_id (id):
     return car.get_cc_account_promo_by_id(id)
 
 @bs.repository_call
-def post_cc_account_promo ( cc_account_promo:CcAccountPromo):
+def post_cc_account_promo ( cc_account_promo:CcAccountPromoModel):
     return car.upsert_cc_account_promo(cc_account_promo)
 
 @bs.repository_call
-def put_cc_account_promo (cc_account_promo:CcAccountPromo):
+def put_cc_account_promo (cc_account_promo:CcAccountPromoModel):
     return car.insert_cc_account_promo(cc_account_promo)
 
 

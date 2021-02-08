@@ -2,15 +2,15 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
-class ClientSelfLender(BaseModel):
+class ClientSelfLenderModel(BaseModel):
     self_lender_id: int
     client_id: int
-    start_date: datetime
-    duration: int
-    pay_from: str
+    start_date: Optional[datetime] = None
+    duration: Optional[int] = None
+    pay_from: Optional[str] = None
     monthly_due_date: int
     termination_date: datetime
-    login: str
-    pwd: str
+    login: Optional[str] = None
+    pwd: Optional[str] = None
     recorded_on: datetime
     

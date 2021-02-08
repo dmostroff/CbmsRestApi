@@ -14,9 +14,10 @@ else:
 CORS(app)
 api = Api(app)
 
-from login_resource import Login
+from login_resource import Login, Register
 from auth_user_resource import AuthUsers, AuthUser
-from auth_role_resource import AuthRoles
+from auth_role_resource import AuthRoles, AuthRole
+from adm_setting_resource import AdmSettings, AdmSetting, AdmSettingPost
 from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount
 
@@ -34,9 +35,15 @@ def version():
 
 #-- Login
 api.add_resource( Login, '/login')
+api.add_resource( Register, '/register')
 api.add_resource( AuthUsers, '/auth/users')
 api.add_resource( AuthUser, '/auth/user/<int:id>')
 api.add_resource( AuthRoles, '/auth/roles')
+api.add_resource( AuthRole, '/auth/role')
+
+api.add_resource( AdmSettings, '/adm/settings')
+api.add_resource( AdmSetting, '/adm/setting/<int:id>')
+api.add_resource( AdmSettingPost, '/adm/setting')
 
 #-- ClientPerson
 api.add_resource( ClientCreditSummary, '/creditsummary')

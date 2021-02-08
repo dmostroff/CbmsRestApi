@@ -21,11 +21,11 @@ def get_auth_role_by_id (id):
     return ar.get_auth_role_by_id(id)
 
 @bs.repository_call
-def post_auth_role ( auth_role:AuthRoleModel):
+def upsert_auth_role ( auth_role:AuthRoleModel):
     return ar.upsert_auth_role(auth_role)
 
 @bs.repository_call
-def put_auth_role (auth_role:AuthRoleModel):
+def insert_auth_role (auth_role:AuthRoleModel):
     return ar.insert_auth_role(auth_role)
 
 #--------------------

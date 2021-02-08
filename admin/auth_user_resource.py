@@ -13,3 +13,7 @@ class AuthUser(Resource):
     def put(self, id):
         authUser[id] = request.form['authUser']
         return {'authUser_id': authUser[id]}
+
+    def post(self):
+        authUserJson = request.get_json()
+        return {'authUser_id': authUserModel}

@@ -1,0 +1,22 @@
+from datetime import datetime
+from typing import List, Optional
+from pydantic import BaseModel
+
+class CcCompanyModel(BaseModel):
+    cc_company_id: int
+    company_name: str
+    url: Optional[str] = None
+    contact: Optional[str] = None
+    address_1: Optional[str] = None
+    address_2: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip: Optional[str] = None
+    country: Optional[str] = None
+    phone: Optional[str] = None
+    phone_2: Optional[str] = None
+    phone_cell: Optional[str] = None
+    phone_fax: Optional[str] = None
+    company_info: Optional[str] = None
+    recorded_on: datetime
+    
