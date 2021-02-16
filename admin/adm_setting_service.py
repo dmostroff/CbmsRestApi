@@ -11,9 +11,9 @@ from admin_model import AdmSettingModel
 def get_adm_settings ():
     return ar.get_adm_settings()
 
-# @bs.repository_call
-# def get_adm_setting_by_adm_setting_id (adm_setting_id):
-#     return ar.get_adm_setting_by_adm_setting_id(adm_setting_id)
+@bs.repository_call
+def get_adm_setting_by_prefix (prefix):
+    return ar.get_adm_setting_by_prefix(prefix)
 
 @bs.repository_call_single_row
 def get_adm_setting_by_id (id):

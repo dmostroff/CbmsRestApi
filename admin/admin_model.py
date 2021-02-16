@@ -40,7 +40,7 @@ class AuthRolePermissionModel(BaseModel):
     permission: str
 
 class AdmSettingModel(BaseModel):
-    adm_setting_id: int
+    id: int
     prefix: str
     keyname: str
     keyvalue: Optional[str] = None

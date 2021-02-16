@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource
 import cc_account_service as cas
+from client_transform import CcAccountJsonToModel
 
 ccAccount = {}
 class CcAccounts(Resource):
@@ -15,8 +16,8 @@ class CcAccount(Resource):
     def get(self, id):
         return cas.get_cc_account_by_id(id)
 
-    def put(self, id):
-        ccAccount[id] = request.form['ccAccount']
-        return {'ccAccount_id': ccAccount[id]}
-
+class CcAccountPost(Resource):
+    def post(self):
+        cc_account = CcAccountJsonToModel(request.get_json())
+        return cas.upsert_cc_account( cc_account)
 # print( "ccaccount_resource")

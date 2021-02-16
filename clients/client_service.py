@@ -137,31 +137,6 @@ def put_client_setting (client_setting:ClientSettingModel):
     return cr.insert_client_setting(client_setting)
 
 #--------------------
-# client_bank_account
-#--------------------
-from ClientBankAccountModel import ClientBankAccountModel
-
-@bs.repository_call
-def get_client_bank_account ():
-    return cr.get_client_bank_account()
-
-@bs.repository_call
-def get_client_bank_account_by_client_id (client_id):
-    return cr.get_client_bank_account_by_client_id(client_id)
-
-@bs.repository_call
-def get_client_bank_account_by_id (id):
-    return cr.get_client_bank_account_by_id(id)
-
-@bs.repository_call
-def post_client_bank_account ( client_bank_account:ClientBankAccountModel):
-    return cr.upsert_client_bank_account(client_bank_account)
-
-@bs.repository_call
-def put_client_bank_account (client_bank_account:ClientBankAccountModel):
-    return cr.insert_client_bank_account(client_bank_account)
-
-#--------------------
 # client_note
 #--------------------
 from ClientNoteModel import ClientNoteModel

@@ -29,7 +29,7 @@ from ClientPerson import ClientPerson
 
 def get_client_person_base_sql():
     sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on
+    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on
     FROM client_person
 """
     return sql
@@ -64,6 +64,7 @@ def upsert_client_person( client_person:ClientPerson):
             , %s as phone_2
             , %s as phone_cell
             , %s as phone_official
+            , %s as client_status
             , %s as client_info
             , %s as recorded_on
     ),
@@ -84,6 +85,7 @@ def upsert_client_person( client_person:ClientPerson):
             , phone_2=t.phone_2
             , phone_cell=t.phone_cell
             , phone_official=t.phone_official
+            , client_status=t.client_status
             , client_info=t.client_info
             , recorded_on=t.recorded_on
         FROM t
@@ -91,7 +93,7 @@ def upsert_client_person( client_person:ClientPerson):
         RETURNING client_id
     ),
     i AS (
-        INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on)
+        INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on)
         SELECT 
             t.last_name
             , t.first_name
@@ -107,6 +109,7 @@ def upsert_client_person( client_person:ClientPerson):
             , t.phone_2
             , t.phone_cell
             , t.phone_official
+            , t.client_status
             , t.client_info
             , t.recorded_on
         FROM t
@@ -136,6 +139,7 @@ def upsert_client_person( client_person:ClientPerson):
             , client_person.phone_2
             , client_person.phone_cell
             , client_person.phone_official
+            , client_person.client_status
             , client_person.client_info
             , client_person.recorded_on
         ]
@@ -143,12 +147,11 @@ def upsert_client_person( client_person:ClientPerson):
 
 def insert_client_person( client_person:ClientPerson):
     sql = """
-    INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_info,recorded_on)
+    INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ;
 """
     val = [
-            
             client_person.last_name
             , client_person.first_name
             , client_person.middle_name
@@ -163,6 +166,7 @@ def insert_client_person( client_person:ClientPerson):
             , client_person.phone_2
             , client_person.phone_cell
             , client_person.phone_official
+            , client_person.client_status
             , client_person.client_info
             , client_person.recorded_on
         ]
@@ -172,7 +176,7 @@ def insert_client_person( client_person:ClientPerson):
 def update_client_person( client_person:ClientPerson):
     sql = """
     UPDATE client_person
-    SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, occupation = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_official = %s, client_info = %s, recorded_on = %s
+    SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, occupation = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_official = %s, client_status = %s, client_info = %s, recorded_on = %s
     WHERE client_id = %s
 """
     val = [client_person.last_name
@@ -189,6 +193,7 @@ def update_client_person( client_person:ClientPerson):
             , client_person.phone_2
             , client_person.phone_cell
             , client_person.phone_official
+            , client_person.client_status
             , client_person.client_info
             , client_person.recorded_on
             , client_person.client_id

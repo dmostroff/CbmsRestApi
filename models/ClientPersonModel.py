@@ -18,6 +18,7 @@ class ClientPersonModel(BaseModel):
     phone_2: Optional[str] = None
     phone_cell: Optional[str] = None
     phone_official: Optional[str] = None
+    client_status: Optional[str] = None
     client_info: Optional[str] = None
     recorded_on: datetime
     

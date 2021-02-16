@@ -75,8 +75,6 @@ def upsert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
     UNION ALL
     SELECT 'UPDATE' as ACTION, promo_id
     FROM u
-    ;
-    ;
 """
     val = [
             cc_account_promo.promo_id

@@ -1,23 +1,17 @@
 import pgsql_db_layer as db
-from admin_model import AdminUserModel
 
 
 #######################
 # auth_user
 #######################
+from admin_model import AuthUserModel
+
 def get_auth_user_basesql():
     sql = """
     SELECT id,username,password,first_name,last_name,email,is_superuser,is_staff,is_active,password_hint,roles,created_at
     FROM auth_user
 """
     return sql
-
-def authenticate_user( username, pwd):
-    sql = get_auth_user_basesql()
-    sql += """
-    WHERE username = %s, password = crpyt( %s, password)
-"""
-    return db.fetchall(sql, [username, pwd])
 
 def get_auth_users():
     sql = get_auth_user_basesql()
@@ -41,17 +35,18 @@ def upsert_auth_user( auth_user:AuthUserModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s as id
-            , %s as username
-            , %s as password
-            , %s as first_name
-            , %s as last_name
-            , %s as email
-            , %s as is_superuser
-            , %s as is_staff
-            , %s as is_active
-            , %s as password_hint
-            , %s as roles
+            %s::integer as id
+            , %s::character varying as username
+            , %s::character varying as password
+            , %s::character varying as first_name
+            , %s::character varying as last_name
+            , %s::character varying as email
+            , %s::boolean as is_superuser
+            , %s::boolean as is_staff
+            , %s::boolean as is_active
+            , %s::character varying as password_hint
+            , %s::ARRAY as roles
+            , %s::timestamp with time zone as created_at
     ),
     u AS (
         UPDATE auth_user
@@ -66,12 +61,13 @@ def upsert_auth_user( auth_user:AuthUserModel):
             , is_active=t.is_active
             , password_hint=t.password_hint
             , roles=t.roles
+            , created_at=t.created_at
         FROM t
-        WHERE auth_user.id = t.id
-        RETURNING id
+        WHERE (auth_user.id = t.id) OR ( auth_user.username = t.username)
+        RETURNING auth_user.id
     ),
     i AS (
-        INSERT INTO auth_user( username,password,first_name,last_name,email,is_superuser,is_staff,is_active,password_hint,roles)
+        INSERT INTO auth_user( username,password,first_name,last_name,email,is_superuser,is_staff,is_active,password_hint,roles,created_at)
         SELECT 
             t.username
             , t.password
@@ -83,16 +79,16 @@ def upsert_auth_user( auth_user:AuthUserModel):
             , t.is_active
             , t.password_hint
             , t.roles
+            , t.created_at
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
+        RETURNING auth_user.id
     )
     SELECT 'INSERT' as ACTION, id
     FROM i
     UNION ALL
     SELECT 'UPDATE' as ACTION, id
     FROM u
-    ;
-    ;
 """
     val = [
             auth_user.id
@@ -106,13 +102,15 @@ def upsert_auth_user( auth_user:AuthUserModel):
             , auth_user.is_active
             , auth_user.password_hint
             , auth_user.roles
+            , auth_user.created_at
         ]
-    return db.execute(sql, val)
+    return db.fetchall(sql, val)
 
 def insert_auth_user( auth_user:AuthUserModel):
     sql = """
-    INSERT INTO auth_user( username,password,first_name,last_name,email,is_superuser,is_staff,is_active,password_hint,roles)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO auth_user( username,password,first_name,last_name,email,is_superuser,is_staff,is_active,password_hint,roles,created_at)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    RETURNING *
     ;
 """
     val = [
@@ -126,15 +124,17 @@ def insert_auth_user( auth_user:AuthUserModel):
             , auth_user.is_active
             , auth_user.password_hint
             , auth_user.roles
+            , auth_user.created_at
         ]
-    return db.execute(sql, val)
+    return db.fetchone(sql, val)
 
 # this has a flaw in loop.index > 2
 def update_auth_user( auth_user:AuthUserModel):
     sql = """
     UPDATE auth_user
-    SET username = %s, password = %s, first_name = %s, last_name = %s, email = %s, is_superuser = %s, is_staff = %s, is_active = %s, password_hint = %s, roles = %s
+    SET username = %s, password = %s, first_name = %s, last_name = %s, email = %s, is_superuser = %s, is_staff = %s, is_active = %s, password_hint = %s, roles = %s, created_at = %s
     WHERE id = %s
+    RETURNING *
 """
     val = [auth_user.username
             , auth_user.password
@@ -146,6 +146,7 @@ def update_auth_user( auth_user:AuthUserModel):
             , auth_user.is_active
             , auth_user.password_hint
             , auth_user.roles
-            , auth_user.id
+            , auth_user.created_at
+        , auth_user.id            
         ]
-    return db.execute(sql, val)
+    return db.fetchone(sql, val)

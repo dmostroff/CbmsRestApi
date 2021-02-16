@@ -16,10 +16,11 @@ api = Api(app)
 
 from login_resource import Login, Register
 from auth_user_resource import AuthUsers, AuthUser
-from auth_role_resource import AuthRoles, AuthRole
-from adm_setting_resource import AdmSettings, AdmSetting, AdmSettingPost
-from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson
-from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount
+from auth_role_resource import AuthRoles, AuthRole, AuthRolePost
+from adm_setting_resource import AdmSettings, AdmSettingByPrefix, AdmSetting, AdmSettingPost
+from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson, ClientPersonPost
+from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount, CcAccountPost
+from clientbankaccount_resource import ClientBankAccounts, ClientBankAccountsByClient, ClientBankAccount, ClientBankAccountPost
 
 @app.route('/', methods=['GET'])
 def read_main():
@@ -39,9 +40,11 @@ api.add_resource( Register, '/register')
 api.add_resource( AuthUsers, '/auth/users')
 api.add_resource( AuthUser, '/auth/user/<int:id>')
 api.add_resource( AuthRoles, '/auth/roles')
-api.add_resource( AuthRole, '/auth/role')
+api.add_resource( AuthRole, '/auth/role/<int:id>')
+api.add_resource( AuthRolePost, '/auth/role')
 
 api.add_resource( AdmSettings, '/adm/settings')
+api.add_resource( AdmSettingByPrefix, '/adm/setting/<string:prefix>')
 api.add_resource( AdmSetting, '/adm/setting/<int:id>')
 api.add_resource( AdmSettingPost, '/adm/setting')
 
@@ -49,9 +52,18 @@ api.add_resource( AdmSettingPost, '/adm/setting')
 api.add_resource( ClientCreditSummary, '/creditsummary')
 api.add_resource( ClientPersons, '/clients')
 api.add_resource( ClientPerson, '/client/person/<int:id>')
+api.add_resource( ClientPersonPost, '/client/person')
+
 api.add_resource( CcAccounts, '/ccaccounts')
 api.add_resource( CcAccountsByClient, '/client/<int:client_id>/ccaccount')
 api.add_resource( CcAccount, '/ccaccount/<int:id>')
+api.add_resource( CcAccountPost, '/ccaccount')
+
+#-- ClientBankAcc
+api.add_resource( ClientBankAccounts, '/bankaccounts')
+api.add_resource( ClientBankAccountsByClient, '/client/<int:client_id>/bankaccount')
+api.add_resource( ClientBankAccount, '/bankaccount/<int:id>')
+api.add_resource( ClientBankAccountPost, '/bankaccount')
 
 print( 'router DONE')
 

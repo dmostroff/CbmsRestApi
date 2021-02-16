@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource
 import client_service as cs
+from client_transform import ClientPersonJsonToModel
 
 clientPerson = {}
 class ClientPersons(Resource):
@@ -12,8 +13,9 @@ class ClientCreditSummary(Resource):
         return cs.get_client_credit_summary()
 class ClientPerson(Resource):
     def get(self, id):
-        return cs.get_client_person_by_client_id(id)
+        return cs.get_client_person_by_id(id)
 
-    def put(self, id):
-        clientPerson[id] = request.form['clientPerson']
-        return {'client_id': clientPerson[id]}
+class ClientPersonPost(Resource):
+    def post(self):
+        client_person = ClientPersonJsonToModel(request.get_json())
+        return cs.upsert_client_person( client_person)
