@@ -21,7 +21,7 @@ from adm_setting_resource import AdmSettings, AdmSettingByPrefix, AdmSetting, Ad
 from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson, ClientPersonPost
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount, CcAccountPost
 from clientbankaccount_resource import ClientBankAccounts, ClientBankAccountsByClient, ClientBankAccount, ClientBankAccountPost
-
+from db_resource import DatabaseInfo
 @app.route('/', methods=['GET'])
 def read_main():
     return { 'msg': 'Welcome to CBMS', 'version': os.getenv('API_VERSION')}
@@ -64,6 +64,10 @@ api.add_resource( ClientBankAccounts, '/bankaccounts')
 api.add_resource( ClientBankAccountsByClient, '/client/<int:client_id>/bankaccount')
 api.add_resource( ClientBankAccount, '/bankaccount/<int:id>')
 api.add_resource( ClientBankAccountPost, '/bankaccount')
+
+#-- Database
+api.add_resource( DatabaseInfo, '/db/<string:name>')
+
 
 print( 'router DONE')
 

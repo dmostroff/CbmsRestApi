@@ -4,7 +4,9 @@ from flask import request
 from flask_restful import Resource
 import datetime
 import jwt
-from user_login_service import parse_token, login
+from user_login_service import parse_token, login, register
+from admin_model import AuthUserModel
+from admin_transform import AuthUserJsonToModel
 
 
 jwt_key = 'junior'
@@ -30,17 +32,18 @@ class Login(Resource):
         pwd = request.form['pwd']
         try:
             user_login = login( username, pwd)
-            return { 'rc': 0, 'msg': 'Login', 'data': user_login }
+            if user_login['user'] is None:
+                return { 'rc': 0, 'msg': 'Invalid Login', 'data': user_login }
+            return { 'rc': 1, 'msg': 'Login successful', 'data': user_login }
         except jwt.exceptions.InvalidKeyError:
             return { 'rc': -1, 'msg': 'Invalid key'}
         except Exception as ex:
             return { 'rc': -9, 'msg': str(ex)}
 class Register(Resource):
     def post(self):
-        username = request.form['username']
-        pwd = request.form['pwd']
+        auth_user = AuthUserJsonToModel( request.json)
         try:
-            user_login = register( username, pwd)
+            user_login = register( auth_user)
             return { 'rc': 0, 'msg': 'Login', 'data': user_login }
         except jwt.exceptions.InvalidKeyError:
             return { 'rc': -1, 'msg': 'Invalid key'}

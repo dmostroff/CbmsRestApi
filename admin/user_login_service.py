@@ -1,10 +1,10 @@
 import datetime
 import os
 import jwt
-import auth_user_repository as aur
+import auth_user_service as aus
 import user_login_repository as ulr
 import base_service as bs
-from admin_model import UserLoginModel
+from admin_model import UserLoginModel, AuthUserModel
 
 def parse_token( request):
     authToken = None
@@ -32,16 +32,23 @@ def create_token( username):
 # user_login
 #--------------------
 def login( username, password):
-    user = aur.authenticate_user( usename, password)
+    user = aus.authenticate_user( username, password)
     newUserLogin = None
     if user is not None:
-        userLogin = UserLogin()
+        userLogin = UserLoginModel()
         userLogin.username = user.username
         userLogin.token = create_token( user.username)
-        newUserLogin = uls.upsert_user_login( userLogin)
+        newUserLogin = ulr.upsert_user_login( userLogin)
+    else:
+        user = aus.get_auth_user_by_username(username)
 
-    return {'user_login': newUserLogin, 'user': user}
+    return {'username': username, 'user': user, 'user_login': newUserLogin}
 
+def register( auth_user:AuthUserModel):
+    user = aus.upsert_auth_user( auth_user)
+    if user['rc'] == 1:
+        return login( user['data']['username'], user['data']['password'])
+    return user
 
 @bs.repository_call
 def get_user_logins():
@@ -54,4 +61,7 @@ def upsert_user_login( username, jwt_token, ssuser_login:UserLoginModel):
 def authenticate_user( username, password):
     pass
 
+@bs.repository_call
+def get_auth_user( username, jwt_token, ssuser_login:UserLoginModel):
+    return ulr.upsert_user_login( user_login)
 

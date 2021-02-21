@@ -10,18 +10,18 @@ class UserLoginModel(BaseModel):
     recorded_on: datetime
     
 class AuthUserModel(BaseModel):
-    id: int
+    id: Optional[int] = None
     username: str
     password: str
     first_name: str
     last_name: str
     email: str
-    is_superuser: bool
-    is_staff: bool
-    is_active: bool
+    is_superuser: Optional[bool] = False
+    is_staff: Optional[bool] = True
+    is_active: Optional[bool] = True
     password_hint: Optional[str] = None
     roles: Optional[str] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
 
 class AuthRoleModel(BaseModel):
     id: int

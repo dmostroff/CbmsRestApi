@@ -25,7 +25,7 @@ def get_client_credit_summary():
 #######################
 # client_person
 #######################
-from ClientPerson import ClientPerson
+from ClientPersonModel import ClientPersonModel
 
 def get_client_person_base_sql():
     sql = """
@@ -45,7 +45,7 @@ def get_client_person_by_id(id):
 """
     return db.fetchall(sql, [id])
 
-def upsert_client_person( client_person:ClientPerson):
+def upsert_client_person( client_person:ClientPersonModel):
     sql = """
     WITH t AS (
         SELECT 
@@ -145,7 +145,7 @@ def upsert_client_person( client_person:ClientPerson):
         ]
     return db.execute(sql, val)
 
-def insert_client_person( client_person:ClientPerson):
+def insert_client_person( client_person:ClientPersonModel):
     sql = """
     INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -173,7 +173,7 @@ def insert_client_person( client_person:ClientPerson):
     return db.execute(sql, val)
 
 # this has a flaw in loop.index > 2
-def update_client_person( client_person:ClientPerson):
+def update_client_person( client_person:ClientPersonModel):
     sql = """
     UPDATE client_person
     SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, occupation = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_official = %s, client_status = %s, client_info = %s, recorded_on = %s

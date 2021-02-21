@@ -19,6 +19,14 @@ def get_auth_users ():
 def get_auth_user_by_id (id):
     return ar.get_auth_user_by_id(id)
 
+@bs.repository_call_single_row_data_only
+def authenticate_user( username, password):
+    return ar.authenticate_user( username, password)
+
+@bs.repository_call_single_row_data_only
+def get_auth_user_by_username (username):
+    return ar.get_auth_user_by_username(username)
+
 def upsert_auth_user ( auth_user:AuthUserModel):
     df = ar.upsert_auth_user(auth_user)
     id = np.int64(df['id'].values[0]).item()

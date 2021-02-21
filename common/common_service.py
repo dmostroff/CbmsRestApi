@@ -49,5 +49,3 @@ def encrypt( decoded_string):
     key = os.getenv('KEY')
     cipher_suite = Fernet(key)
     return cipher_suite.encrypt( bytes(decoded_string, 'utf-8'))
-
-# print( 'common_service')
