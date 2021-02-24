@@ -14,7 +14,7 @@ else:
 CORS(app)
 api = Api(app)
 
-from login_resource import Login, Register
+from user_login_resource import UserLogin
 from auth_user_resource import AuthUsers, AuthUser
 from auth_role_resource import AuthRoles, AuthRole, AuthRolePost
 from adm_setting_resource import AdmSettings, AdmSettingByPrefix, AdmSetting, AdmSettingPost
@@ -35,8 +35,7 @@ def version():
     return { 'version': os.getenv('API_VERSION')}
 
 #-- Login
-api.add_resource( Login, '/login')
-api.add_resource( Register, '/register')
+api.add_resource( UserLogin, '/onboard/<string:name>')
 api.add_resource( AuthUsers, '/auth/users')
 api.add_resource( AuthUser, '/auth/user/<int:id>')
 api.add_resource( AuthRoles, '/auth/roles')

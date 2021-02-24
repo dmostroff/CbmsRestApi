@@ -1,3 +1,4 @@
+from flask import request
 import datetime
 import os
 import jwt
@@ -5,6 +6,7 @@ import auth_user_service as aus
 import user_login_repository as ulr
 import base_service as bs
 from admin_model import UserLoginModel, AuthUserModel
+from admin_transform import AuthUserJsonToModel
 
 def parse_token( request):
     authToken = None
@@ -31,7 +33,19 @@ def create_token( username):
 #--------------------
 # user_login
 #--------------------
-def login( username, password):
+def login():
+    content = request.get_json(silent=True)
+    try:
+        user_login = login_authenticate( content['username'], content['pwd'])
+        if user_login['user'] is None:
+            return { 'rc': 0, 'msg': 'Invalid Login', 'data': user_login }
+        return { 'rc': 1, 'msg': 'Login successful', 'data': user_login }
+    except jwt.exceptions.InvalidKeyError:
+        return { 'rc': -1, 'msg': 'Invalid key'}
+    except Exception as ex:
+        return { 'rc': -9, 'msg': str(ex)}
+
+def login_authenticate( username, password):
     user = aus.authenticate_user( username, password)
     newUserLogin = None
     if user is not None:
@@ -44,24 +58,41 @@ def login( username, password):
 
     return {'username': username, 'user': user, 'user_login': newUserLogin}
 
-def register( auth_user:AuthUserModel):
+def logout():
+    pass
+
+def register():
+    auth_user = AuthUserJsonToModel( request.get_json(silent=True))
+    try:
+        user_login = onboard_register( auth_user)
+        return { 'rc': 0, 'msg': 'Login', 'data': user_login }
+    except jwt.exceptions.InvalidKeyError:
+        return { 'rc': -1, 'msg': 'Invalid key'}
+    except Exception as ex:
+        return { 'rc': -9, 'msg': str(ex)}
+
+def onboard_register( auth_user:AuthUserModel):
     user = aus.upsert_auth_user( auth_user)
     if user['rc'] == 1:
-        return login( user['data']['username'], user['data']['password'])
+        return login_authenticate( user['data']['username'], user['data']['password'])
     return user
+
+@bs.repository_call_single_row
+def get_user_login():
+    pass
 
 @bs.repository_call
 def get_user_logins():
     return ulr.get_user_logins()
 
 @bs.repository_call
-def upsert_user_login( username, jwt_token, ssuser_login:UserLoginModel):
+def upsert_user_login( username, jwt_token, user_login:UserLoginModel):
     return ulr.upsert_user_login( user_login)
 
 def authenticate_user( username, password):
     pass
 
 @bs.repository_call
-def get_auth_user( username, jwt_token, ssuser_login:UserLoginModel):
+def get_auth_user( username, jwt_token, user_login:UserLoginModel):
     return ulr.upsert_user_login( user_login)
 

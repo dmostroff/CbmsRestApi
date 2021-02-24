@@ -4,13 +4,14 @@ from flask import request
 from flask_restful import Resource
 import datetime
 import jwt
-from user_login_service import parse_token, login, register
+import user_login_service as uls
 from admin_model import AuthUserModel
 from admin_transform import AuthUserJsonToModel
 
 
 jwt_key = 'junior'
 
+import parse_token, login, register
 class Login(Resource):
     def get(self):
         authToken = parse_token( request)
@@ -28,25 +29,13 @@ class Login(Resource):
         return { 'rc': -9, 'msg': 'No Authorization Token'}
 
     def post(self):
-        username = request.form['username']
-        pwd = request.form['pwd']
-        try:
-            user_login = login( username, pwd)
-            if user_login['user'] is None:
-                return { 'rc': 0, 'msg': 'Invalid Login', 'data': user_login }
-            return { 'rc': 1, 'msg': 'Login successful', 'data': user_login }
-        except jwt.exceptions.InvalidKeyError:
-            return { 'rc': -1, 'msg': 'Invalid key'}
-        except Exception as ex:
-            return { 'rc': -9, 'msg': str(ex)}
-class Register(Resource):
-    def post(self):
-        auth_user = AuthUserJsonToModel( request.json)
-        try:
-            user_login = register( auth_user)
-            return { 'rc': 0, 'msg': 'Login', 'data': user_login }
-        except jwt.exceptions.InvalidKeyError:
-            return { 'rc': -1, 'msg': 'Invalid key'}
-        except Exception as ex:
-            return { 'rc': -9, 'msg': str(ex)}
+        funcs = {
+            'login': uls.login,
+            'logout': uls.logout,
+            'register': uls.register,
+            'user': uls.get_user
+        }
+        if name in funcs:
+            return {name: funcs[name]() }, 200
+        return None, 404
 
