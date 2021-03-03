@@ -30,6 +30,20 @@ def create_token( username):
     finally:
         return jwt_token
 
+def decrypt_token( auth_token ):
+    jwt_token_decode = None
+    jwt_key = os.getenv('JWT_SECRET_KEY')
+    try:
+        jwt_token_decode = jwt.decode(auth_token, jwt_key, algorithm="HS256")
+    except jwt.exceptions.InvalidKeyError:
+        print( { 'rc': -1, 'msg': 'Invalid key'})
+        raise jwt.exceptions.InvalidKeyError
+    except Exception as ex:
+        print( str(ex))
+        raise ex
+    finally:
+        return jwt_token_decode
+
 #--------------------
 # user_login
 #--------------------
@@ -59,7 +73,10 @@ def login_authenticate( username, password):
     return {'username': username, 'user': user, 'user_login': newUserLogin}
 
 def logout():
-    pass
+    auth_token = parse_token(request)
+    jwt_token_decode = decrypt_token(auth_token)
+    ulr.delete_user_login_by_username(jwt_token_decode['username'])
+    return { 'rc': 0, 'msg': 'Logged out'}
 
 def register():
     auth_user = AuthUserJsonToModel( request.get_json(silent=True))

@@ -76,3 +76,8 @@ def upsert_user_login( user_login:UserLoginModel):
             , user_login.exp_date
         ]
     return db.execute(sql, val)
+
+def delete_user_login_by_username(username):
+    sql = "DELETE FROM admin.user_login WHERE username = %s"
+    return db.execute(sql, [username])
+
