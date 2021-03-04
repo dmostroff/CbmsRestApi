@@ -25,7 +25,7 @@ class UserLogin(Resource):
             'user': uls.get_user_login
         }
         if name in funcs:
-            return {name: funcs[name]() }, 200
+            return funcs[name](), 200
         return None, 404
 
     def put(self):

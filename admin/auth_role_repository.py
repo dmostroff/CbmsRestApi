@@ -1,10 +1,9 @@
 import pgsql_db_layer as db
-
+from admin_model import AuthRoleModel, AuthRolePermissionModel
 
 #######################
 # auth_role_permission
 #######################
-import AuthRolePermissionModel
 
 def get_auth_role_permission_basesql():
     sql = """
@@ -99,8 +98,6 @@ def update_auth_role_permission( auth_role_permission:AuthRolePermissionModel):
 #######################
 # auth_role
 #######################
-import AuthRoleModel
-
 def get_auth_role_basesql():
     sql = """
     SELECT id,role,description

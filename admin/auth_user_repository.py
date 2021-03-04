@@ -9,7 +9,18 @@ from admin_model import AuthUserModel
 
 def get_auth_user_basesql():
     sql = """
-    SELECT id,username,password,first_name,last_name,email,is_superuser,is_staff,is_active,password_hint,roles,created_at
+    SELECT id
+        , username
+        , password
+        , first_name
+        , last_name
+        , email
+        , is_superuser
+        , is_staff
+        , is_active
+        , password_hint
+        , array_to_string(roles, ',') as roles
+        , created_at
     FROM admin.auth_user
 """
     return sql
@@ -21,7 +32,7 @@ def authenticate_user( username, password):
         AND password is NOT NULL 
         AND password = crypt(%s, password)
 """
-    return db.fetchone(sql, [username, password])
+    return db.fetchall(sql, [username, password])
 
 def get_auth_users():
     sql = get_auth_user_basesql()
@@ -53,28 +64,28 @@ def upsert_auth_user( auth_user:AuthUserModel):
     WITH t AS (
         SELECT 
             %s::integer as id
-            , %s::character varying as username
-            , %s::character varying as password
             , %s::character varying as first_name
             , %s::character varying as last_name
             , %s::character varying as email
+            , %s::character varying as username
+            , crypt(%s, gen_salt('bf', 8))::character varying as password
+            , %s::character varying as password_hint
             , %s::boolean as is_superuser
             , %s::boolean as is_staff
             , %s::boolean as is_active
-            , %s::character varying as password_hint
     ),
     u AS (
         UPDATE admin.auth_user
         SET 
-            username=t.username
-            , password=t.password
-            , first_name=t.first_name
+            first_name=t.first_name
             , last_name=t.last_name
             , email=t.email
+            , username=t.username
+            , password=t.password
+            , password_hint=t.password_hint
             , is_superuser=t.is_superuser
             , is_staff=t.is_staff
             , is_active=t.is_active
-            , password_hint=t.password_hint
         FROM t
         WHERE (auth_user.id = t.id) OR ( auth_user.username = t.username)
         RETURNING auth_user.id
@@ -103,15 +114,15 @@ def upsert_auth_user( auth_user:AuthUserModel):
 """
     val = [
             auth_user.id
-            , auth_user.username
-            , auth_user.password
             , auth_user.first_name
             , auth_user.last_name
             , auth_user.email
+            , auth_user.username
+            , auth_user.password
+            , auth_user.password_hint
             , auth_user.is_superuser
             , auth_user.is_staff
             , auth_user.is_active
-            , auth_user.password_hint
         ]
     return db.fetchall(sql, val)
 

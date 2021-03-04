@@ -2,11 +2,12 @@ from flask import request
 import datetime
 import os
 import jwt
+import json
 import auth_user_service as aus
 import user_login_repository as ulr
 import base_service as bs
 from admin_model import UserLoginModel, AuthUserModel
-from admin_transform import AuthUserJsonToModel
+from admin_transform import AuthUserJsonToModel, UserLoginJsonToModel
 
 def parse_token( request):
     authToken = None
@@ -63,14 +64,14 @@ def login_authenticate( username, password):
     user = aus.authenticate_user( username, password)
     newUserLogin = None
     if user is not None:
-        userLogin = UserLoginModel()
-        userLogin.username = user.username
-        userLogin.token = create_token( user.username)
-        newUserLogin = ulr.upsert_user_login( userLogin)
+        jwt_token = create_token( user['username'])
+        userLogin = UserLoginJsonToModel( { 'username': user['username'], 'token': jwt_token })
+        newUserLogin = upsert_user_login( userLogin)
+        user.pop('password', None)
     else:
         user = aus.get_auth_user_by_username(username)
 
-    return {'username': username, 'user': user, 'user_login': newUserLogin}
+    return { 'user': user, 'user_login': newUserLogin['data']}
 
 def logout():
     auth_token = parse_token(request)
@@ -102,9 +103,9 @@ def get_user_login():
 def get_user_logins():
     return ulr.get_user_logins()
 
-@bs.repository_call
-def upsert_user_login( username, jwt_token, user_login:UserLoginModel):
-    return ulr.upsert_user_login( user_login)
+@bs.repository_call_single_row
+def upsert_user_login( userLogin: UserLoginJsonToModel):
+    return ulr.upsert_user_login( userLogin)
 
 def authenticate_user( username, password):
     pass

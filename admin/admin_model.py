@@ -3,24 +3,24 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class UserLoginModel(BaseModel):
-    id: int
+    id: Optional[int] = None
     username: str
-    token: str
-    exp_date: datetime
-    recorded_on: datetime
+    token: Optional[str] = None
+    exp_date: Optional[datetime] = None
+    recorded_on: Optional[datetime] = None
     
 class AuthUserModel(BaseModel):
     id: Optional[int] = None
-    username: str
-    password: str
     first_name: str
     last_name: str
     email: str
+    username: str
+    password: str
+    password_hint: Optional[str] = None
     is_superuser: Optional[bool] = False
     is_staff: Optional[bool] = True
     is_active: Optional[bool] = True
-    password_hint: Optional[str] = None
-    roles: Optional[str] = None
+    roles: List[str] = None
     created_at: Optional[datetime] = None
 
 class AuthRoleModel(BaseModel):

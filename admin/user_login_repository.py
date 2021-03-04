@@ -37,45 +37,41 @@ def upsert_user_login( user_login:UserLoginModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s as id
-            , %s as username
-            , %s as token
-            , %s as exp_date
+            %s::varchar(32) as username
+            , %s::varchar(128) as token
     ),
     u AS (
-        UPDATE user_login
+        UPDATE admin.user_login
         SET 
             username=t.username
-            , first_name=t.first_name
             , token=t.token
-            , exp_date=t.exp_date
+            , exp_date=now()
         FROM t
-        WHERE user_login.id = t.id
-        RETURNING id
+        WHERE user_login.username = t.username
+        RETURNING user_login.id, user_login.username, user_login.token, user_login.exp_date
     ),
     i AS (
-        INSERT INTO user_login( username, token, exp_date)
+        INSERT INTO admin.user_login( username, token, exp_date)
         SELECT 
             t.username
             , t.token
-            , t.exp_date
+            , CURRENT_TIMESTAMP
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
+        RETURNING user_login.id, user_login.username, user_login.token, user_login.exp_date
     )
-    SELECT 'INSERT' as ACTION, id
+    SELECT 'INSERT' as ACTION, i.id, i.username, i.token, i.exp_date
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, id
+    SELECT 'UPDATE' as ACTION, u.id, u.username, u.token, u.exp_date
     FROM u
     ;
 """
     val = [
-            user_login.id
-            , user_login.username
+            user_login.username
             , user_login.token
-            , user_login.exp_date
         ]
-    return db.execute(sql, val)
+    return db.fetchall(sql, val)
 
 def delete_user_login_by_username(username):
     sql = "DELETE FROM admin.user_login WHERE username = %s"
