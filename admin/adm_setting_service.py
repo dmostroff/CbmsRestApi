@@ -19,14 +19,16 @@ def get_adm_setting_by_prefix (prefix):
 def get_adm_setting_by_id (id):
     return ar.get_adm_setting_by_id(id)
 
-# @bs.repository_call
 def upsert_adm_setting ( adm_setting:AdmSettingModel):
     df = ar.upsert_adm_setting(adm_setting)
-    id = np.int64(df['adm_setting_id'].values[0]).item()
+    id = np.int64(df['id'].values[0]).item()
     return get_adm_setting_by_id(id)
 
+def delete_adm_setting ( id):
+    df = ar.delete_adm_setting(id)
+    return np.int64(df['id'].values[0]).item()
 
 @bs.repository_call
-def put_adm_setting (adm_setting:AdmSettingModel):
-    return ar.insert_adm_setting(adm_setting)
+def delete_adm_setting_by_prefix ( prefix):
+    return ar.delete_adm_setting_by_prefix(prefix)
 

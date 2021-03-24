@@ -9,6 +9,8 @@ import base_service as bs
 from admin_model import UserLoginModel, AuthUserModel
 from admin_transform import AuthUserJsonToModel, UserLoginJsonToModel
 
+JWT_CRYPT_ALG="HS256"
+
 def parse_token( request):
     authToken = None
     auth = request.headers.get( 'Authorization')
@@ -21,7 +23,7 @@ def create_token( username):
     payload = {'username': username, "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=120)}
     jwt_key = os.getenv('JWT_SECRET_KEY')
     try:
-        jwt_token = jwt.encode(payload, jwt_key, algorithm="HS256")
+        jwt_token = jwt.encode(payload, jwt_key, algorithm=JWT_CRYPT_ALG)
     except jwt.exceptions.InvalidKeyError:
         print( { 'rc': -1, 'msg': 'Invalid key'})
         raise jwt.exceptions.InvalidKeyError
@@ -35,7 +37,7 @@ def decrypt_token( auth_token ):
     jwt_token_decode = None
     jwt_key = os.getenv('JWT_SECRET_KEY')
     try:
-        jwt_token_decode = jwt.decode(auth_token, jwt_key, algorithm="HS256")
+        jwt_token_decode = jwt.decode(auth_token, jwt_key, algorithm=JWT_CRYPT_ALG)
     except jwt.exceptions.InvalidKeyError:
         print( { 'rc': -1, 'msg': 'Invalid key'})
         raise jwt.exceptions.InvalidKeyError

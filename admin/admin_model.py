@@ -23,25 +23,34 @@ class AuthUserModel(BaseModel):
     roles: List[str] = None
     created_at: Optional[datetime] = None
 
+class AuthUserSettingModel(BaseModel):
+    id: Optional[int] = None
+    user_id: int
+    prefix: str
+    keyname: str
+    keyvalue: Optional[str] = None
+    display_rank: Optional[int] = None
+
 class AuthRoleModel(BaseModel):
-    id: int
+    id: Optional[int] = None
     role: str
     description: Optional[str] = None
 
 class AuthPermissionModel(BaseModel):
-    id: int
+    id: Optional[int] = None
     permission: str
     description: Optional[str] = None
     codename: str
     
 class AuthRolePermissionModel(BaseModel):
-    id: int
+    id: Optional[int] = None
     role: str
     permission: str
 
 class AdmSettingModel(BaseModel):
-    id: int
+    id: Optional[int] = None
     prefix: str
     keyname: str
     keyvalue: Optional[str] = None
+    display_rank: Optional[int] = None
     

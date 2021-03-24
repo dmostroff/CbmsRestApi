@@ -27,10 +27,3 @@ class UserLogin(Resource):
         if name in funcs:
             return funcs[name](), 200
         return None, 404
-
-    def put(self):
-        userLogin = UserLogin()
-        userLogin.username = request.form['username']
-        userLogin.token = request.headers
-        newUserLogin = uls.upsert_user_login( userLogin)
-        return {'user_login': newUserLogin}

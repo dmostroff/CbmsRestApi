@@ -14,14 +14,53 @@ else:
 CORS(app)
 api = Api(app)
 
+import user_login_service as uls
 from user_login_resource import UserLogin
 from auth_user_resource import AuthUsers, AuthUser
+from auth_user_setting_resource import AuthUserSetting, AuthUserSettingByPrefix, AuthUserSettingPost
 from auth_role_resource import AuthRoles, AuthRole, AuthRolePost
 from adm_setting_resource import AdmSettings, AdmSettingByPrefix, AdmSetting, AdmSettingPost
 from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson, ClientPersonPost
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount, CcAccountPost
 from clientbankaccount_resource import ClientBankAccounts, ClientBankAccountsByClient, ClientBankAccount, ClientBankAccountPost
 from db_resource import DatabaseInfo
+
+@app.before_request
+def check_jwt_token():
+    pass
+
+@staticmethod
+def decode_auth_token(auth_token):
+    """
+    Decodes the auth token
+    :param auth_token:
+    :return: integer|string
+    """
+    try:
+        payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+        return payload['sub']
+    except jwt.ExpiredSignatureError:
+        return 'Signature expired. Please log in again.'
+    except jwt.InvalidTokenError:
+        return 'Invalid token. Please log in again.'
+        
+# Using an `after_request` callback, we refresh any token that is within 30
+# minutes of expiring. Change the timedeltas to match the needs of your application.
+# @app.after_request
+# def refresh_expiring_jwts(response):
+#     try:
+#         exp_timestamp = get_jwt()["exp"]
+#         now = datetime.now(timezone.utc)
+#         target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+#         if target_timestamp > exp_timestamp:
+#             access_token = create_access_token(identity=get_jwt_identity())
+#             set_access_cookies(response, access_token)
+#         return response
+#     except (RuntimeError, KeyError):
+#         # Case where there is not a valid JWT. Just return the original respone
+#         return response
+
+
 @app.route('/', methods=['GET'])
 def read_main():
     return { 'msg': 'Welcome to CBMS', 'version': os.getenv('API_VERSION')}
@@ -36,16 +75,24 @@ def version():
 
 #-- Login
 api.add_resource( UserLogin, '/onboard/<string:name>')
+#-- Auth Users
 api.add_resource( AuthUsers, '/auth/users')
 api.add_resource( AuthUser, '/auth/user/<int:id>')
+#-- UserSettings
+api.add_resource( AuthUserSettingByPrefix, '/user/setting/<int:user_id>/<string:prefix>')
+api.add_resource( AuthUserSetting, '/user/setting/<int:id>')
+api.add_resource( AuthUserSettingPost, '/user/setting')
+#-- Roles
 api.add_resource( AuthRoles, '/auth/roles')
 api.add_resource( AuthRole, '/auth/role/<int:id>')
 api.add_resource( AuthRolePost, '/auth/role')
 
+#-- Settings
 api.add_resource( AdmSettings, '/adm/settings')
 api.add_resource( AdmSettingByPrefix, '/adm/setting/<string:prefix>')
 api.add_resource( AdmSetting, '/adm/setting/<int:id>')
 api.add_resource( AdmSettingPost, '/adm/setting')
+
 
 #-- ClientPerson
 api.add_resource( ClientCreditSummary, '/creditsummary')

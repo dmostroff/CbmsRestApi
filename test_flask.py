@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 
-mport flask
+import flask
 
 @pytest.fixture
 def client():
@@ -18,3 +18,5 @@ def client():
     os.close(db_fd)
     os.unlink(flask.app.config['DATABASE'])
 
+def test_client():
+    assert 1 == 1

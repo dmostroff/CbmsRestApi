@@ -35,21 +35,15 @@ def get_adm_setting_by_id(id):
     df = db.fetchall(sql, [id])
     return df.head(1)
 
-# def get_adm_setting_by_adm_setting_id(adm_setting_id):
-#     sql = get_adm_setting_basesql()
-#     sql += """
-#     WHERE adm_setting_id = %s
-# """
-#     return db.fetchall(sql, [adm_setting_id])
-
 def upsert_adm_setting( adm_setting:AdmSettingModel):
     sql = """
     WITH t AS (
         SELECT 
             %s::int as id
             , %s::varchar(32) as prefix
-            , %s::text as keyname
+            , %s::varchar(32) as keyname
             , %s::text as keyvalue
+            , %s::int as display_rank
     ),
     u AS (
         UPDATE admin.adm_setting
@@ -57,31 +51,47 @@ def upsert_adm_setting( adm_setting:AdmSettingModel):
             prefix=t.prefix
             , keyname=t.keyname
             , keyvalue=t.keyvalue
+            , display_rank = t.display_rank
         FROM t
-        WHERE admin.adm_setting.id = t.id
-        RETURNING admin.adm_setting.*
+        WHERE adm_setting.id = t.id
+        RETURNING adm_setting.*
+    ),
+    u1 AS (
+        UPDATE admin.adm_setting
+        SET keyvalue=t.keyvalue
+            , display_rank = t.display_rank
+        FROM t
+        WHERE adm_setting.prefix = t.prefix AND adm_setting.keyname = t.keyname
+            AND NOT EXISTS ( SELECT 1 FROM u)
+        RETURNING adm_setting.*
     ),
     i AS (
-        INSERT INTO admin.adm_setting( prefix,keyname,keyvalue)
+        INSERT INTO admin.adm_setting( prefix, keyname, keyvalue, display_rank)
         SELECT 
             t.prefix
             , t.keyname
             , t.keyvalue
+            , t.display_rank
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
-        RETURNING admin.adm_setting.*
+            AND NOT EXISTS ( SELECT 1 FROM u1)
+        RETURNING adm_setting.*
     )
-    SELECT 'INSERT' as ACTION, i.id
+    SELECT 'INSERT' as ACTION, i.id, i.prefix, i.keyname, i.keyvalue, i.display_rank
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, u.id
+    SELECT 'UPDATE' as ACTION, u.id, u.prefix, u.keyname, u.keyvalue, u.display_rank
     FROM u
+    UNION ALL
+    SELECT 'UPDATE' as ACTION, u1.id, u1.prefix, u1.keyname, u1.keyvalue, u1.display_rank
+    FROM u1
 """
     val = [
             adm_setting.id
             , adm_setting.prefix
             , adm_setting.keyname
             , adm_setting.keyvalue
+            , adm_setting.display_rank
         ]
     return db.fetchall(sql, val)
 
@@ -113,3 +123,19 @@ def update_adm_setting( adm_setting:AdmSettingModel):
             , adm_setting.id
         ]
     return db.execute(sql, val)
+
+def delete_auth_user_setting( id):
+    sql = """
+    DELETE admin.adm_setting
+    WHERE id = %s
+    RETURNING id
+"""
+    return db.fetchall(sql, [ id ])
+
+def delete_adm_setting_by_prefix( prefix):
+    sql = """
+    DELETE FROM admin.adm_setting
+    WHERE prefix = %s
+    RETURNING id
+"""
+    return db.fetchall(sql, [ prefix ])
