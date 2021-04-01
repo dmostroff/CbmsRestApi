@@ -72,8 +72,9 @@ def login_authenticate( username, password):
         user.pop('password', None)
     else:
         user = aus.get_auth_user_by_username(username)
+    user_login = newUserLogin['data'] if newUserLogin is not None and 'data' in newUserLogin else None
 
-    return { 'user': user, 'user_login': newUserLogin['data']}
+    return { 'user': user, 'user_login': user_login}
 
 def logout():
     auth_token = parse_token(request)
