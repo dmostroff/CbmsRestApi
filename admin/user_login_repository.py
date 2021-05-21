@@ -45,7 +45,7 @@ def upsert_user_login( user_login:UserLoginModel):
         SET 
             username=t.username
             , token=t.token
-            , exp_date=now()
+            , exp_date=now()+INTERVAL '5 hour'
         FROM t
         WHERE user_login.username = t.username
         RETURNING user_login.id, user_login.username, user_login.token, user_login.exp_date

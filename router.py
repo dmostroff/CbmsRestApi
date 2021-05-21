@@ -11,6 +11,7 @@ if 'APACHE_RUN_DIR' in os.environ.keys():
 else:
     from flask import current_app as app
 
+print( 'router BEGIN')
 CORS(app)
 api = Api(app)
 

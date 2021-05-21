@@ -15,6 +15,13 @@ class ClientPerson(Resource):
     def get(self, id):
         return cs.get_client_person_by_id(id)
 
+    def post( self):
+        client_person = ClientPersonJsonToModel(request.get_json())
+        return cs.upsert_client_person( client_person)
+
+    def delete(self):
+        return cs.delete_client_person_by_id(id)
+
 class ClientPersonPost(Resource):
     def post(self):
         client_person = ClientPersonJsonToModel(request.get_json())

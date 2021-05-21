@@ -200,4 +200,13 @@ def update_client_person( client_person:ClientPersonModel):
         ]
     return db.execute(sql, val)
 
+def delete_client_persons( id):
+    sql = """
+    DELETE FROM client_person
+    WHERE client_id = %s
+"""
+    val = [ id ]
+    return db.execute(sql, val                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               )
+
+
 # print( 'client_repository')

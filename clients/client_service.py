@@ -56,6 +56,10 @@ def post_client_person ( client_person:ClientPersonModel):
     return cr.upsert_client_person(client_person)
 
 @bs.repository_call
+def delete_client_person ( id):
+    return cr.delete_client_person(client_person)
+
+@bs.repository_call
 def put_client_person (client_person:ClientPersonModel):
     return cr.insert_client_person(client_person)
 
