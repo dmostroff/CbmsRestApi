@@ -13,6 +13,18 @@ def repository_call( func):
             raise e
     return with_repository_call
 
+def repository_call_data( func):
+    def with_repository_call(*args, **kwargs):
+        try:
+            df = func(*args, **kwargs)
+            dfjson = df.to_json(orient="records", date_format="iso")
+            data = json.loads(dfjson)
+            return data
+        except Exception as e:
+            print( sys.exc_info()[1])
+            raise e
+    return with_repository_call
+
 def repository_call_single_row( func):
     def with_repository_call(*args, **kwargs):
         try:
@@ -29,7 +41,7 @@ def repository_call_single_row( func):
     return with_repository_call
 # print( 'base_service')
 
-def repository_call_single_row_data_only( func):
+def repository_call_single_row_data( func):
     def with_repository_call(*args, **kwargs):
         try:
             df = func(*args, **kwargs)

@@ -20,11 +20,11 @@ def get_auth_users ():
 def get_auth_user_by_id (id):
     return ar.get_auth_user_by_id(id)
 
-@bs.repository_call_single_row_data_only
+@bs.repository_call_single_row_data
 def authenticate_user( username, password):
     return ar.authenticate_user( username, password)
 
-@bs.repository_call_single_row_data_only
+@bs.repository_call_single_row_data
 def get_auth_user_by_username (username):
     return ar.get_auth_user_by_username(username)
 

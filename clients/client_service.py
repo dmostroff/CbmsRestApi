@@ -8,7 +8,7 @@ import common_service as cs
 @bs.repository_call
 def get_client_credit_summary():
     return cr.get_client_credit_summary()
-    
+
 #--------------------
 # client_cc_history
 #--------------------
@@ -45,7 +45,11 @@ def get_client_persons ():
 
 @bs.repository_call
 def get_client_person_by_client_id (client_id):
-    return cr.get_client_person_by_client_id(client_id)
+    return cr.get_client_person_by_id(client_id)
+
+@bs.repository_call_single_row_data
+def get_client_person_data (client_id):
+    return cr.get_client_person_by_id(client_id)
 
 @bs.repository_call
 def get_client_person_by_id (id):
@@ -256,6 +260,10 @@ def get_client_cc_action ():
 @bs.repository_call
 def get_client_cc_action_by_client_id (client_id):
     return cr.get_client_cc_action_by_client_id(client_id)
+
+@bs.repository_call_data
+def get_client_cc_action_data (client_id):
+    return cr.get_client_person_by_client_id(client_id)
 
 @bs.repository_call
 def get_client_cc_action_by_id (id):

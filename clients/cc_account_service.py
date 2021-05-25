@@ -14,6 +14,10 @@ def get_cc_account ():
 def get_cc_account_by_client_id (client_id):
     return car.get_cc_account_by_client_id(client_id)
 
+@bs.repository_call_data
+def get_cc_account_data_by_client (client_id):
+    return car.get_cc_account_by_client_id(client_id)
+
 @bs.repository_call
 def get_cc_account_by_id (id):
     return car.get_cc_account_by_id(id)
