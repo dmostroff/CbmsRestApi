@@ -8,17 +8,33 @@ def get_client_credit_summary():
     sql = """
     SELECT cp.client_id
         , MIN(TRIM( CONCAT(cp.last_name, ', ', cp.first_name, ' ', cp.middle_name))) as client_name
-        , '' as address
+        , MIN(TRIM(CONCAT(address_1, ' ', address_2, ' ', city, ' ', state, ' ', zip))) as address
         , MIN(cp.email) AS email
         , MIN(cp.phone) as phone
         , MIN(COALESCE(cca.open_date, '1900-01-01')) as start_date
-        , CAST( SUM( cca.credit_limit) AS DECIMAL(12,2)) AS total_credit_limit
+        , CAST( SUM( CASE WHEN cc_status = 'ACTIVE' THEN cca.credit_limit ELSE 0 END) AS DECIMAL(12,2)) AS total_credit_limit
     FROM client.client_person cp
         LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.client_id
+        LEFT OUTER JOIN client.client_address ca ON ca.client_id = cp.client_id AND ca.address_type = 'primary'
     GROUP BY cp.client_id
     ORDER BY start_date, client_name
 """
     return db.fetchall(sql)
+
+def get_client_credit_summary_by_client_id( id):
+    sql = """
+    SELECT cp.client_id
+        , MIN(TRIM( CONCAT(cp.last_name, ', ', cp.first_name, ' ', cp.middle_name))) as client_name
+        , SUM( CASE WHEN cc_status = 'ACTIVE' THEN 1 ELSE 0 END) as number_of_cards
+        , MIN(COALESCE(cca.open_date, '1900-01-01')) as start_date
+        , CAST( SUM( CASE WHEN cc_status = 'ACTIVE' THEN cca.credit_limit ELSE 0 END) AS DECIMAL(12,2)) AS total_credit_limit
+    FROM client.client_person cp
+        LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.client_id
+    WHERE cp.client_id = %s
+    GROUP BY cp.client_id
+    ORDER BY start_date, client_name
+"""
+    return db.fetchall(sql, [id])
 
 
 
@@ -29,7 +45,24 @@ from ClientPersonModel import ClientPersonModel
 
 def get_client_person_base_sql():
     sql = """
-    SELECT client_id,last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on
+    SELECT client_id
+        , last_name
+        , first_name
+        , middle_name
+        , dob
+        , gender
+        , ssn
+        , mmn
+        , email
+        , pwd
+        , occupation
+        , phone
+        , phone_2
+        , phone_official
+        , client_status
+        , COALESCE( (SELECT MAX(keyvalue) FROM admin.adm_setting WHERE prefix = 'CLIENTSTATUS' AND keyname = client_status), client_status) as client_status_desc
+        , client_info
+        , recorded_on
     FROM client_person
 """
     return sql

@@ -15,7 +15,7 @@ def get_client_bank_accounts ():
 # def get_client_bank_account_by_client_bank_account_id (client_bank_account_id):
 #     return cr.get_client_bank_account_by_client_bank_account_id(client_bank_account_id)
 
-@bs.repository_call
+@bs.repository_call_data
 def get_client_bank_account_by_client_id (client_id):
     return cr.get_client_bank_account_by_client_id(client_id)
 

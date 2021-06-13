@@ -3,6 +3,7 @@ import sys
 import socket
 
 from flask import Flask
+from flask_cors import CORS
 
 isApache = 'APACHE_RUN_DIR' in os.environ.keys()
 
@@ -16,10 +17,15 @@ pathRootDir = os.path.join( os.path.dirname(__file__), "static") if isApache els
 print ( f"In app: pathRootDir is '{pathRootDir}'; ROOT_DIR: '{ROOT_DIR}'")
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append( pathRootDir)
-for subdir in ['admin', 'common', 'database', 'resources', 'models', 'clients']:
+for subdir in ['admin', 'common', 'database', 'resources', 'models', 'clients', 'creditcards']:
     sys.path.append( os.path.join(pathRootDir, subdir))
 
-app= Flask(__name__)
+app = Flask(__name__)
+app.config.update( 
+    DEBUG = True,
+    SERVERNAME="cbmsapi.com:8081"
+)
+CORS(app)
 
 if __name__ == "__main__":
 	app.run()

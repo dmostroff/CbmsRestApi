@@ -8,8 +8,24 @@ from ClientBankAccountModel import ClientBankAccountModel
 
 def get_client_bank_account_basesql():
     sql = """
-    SELECT id,client_id,bank_name,account_num,routing_num,branch_num,iban,country,account_login,account_pwd,account_status,debit_card,debit_info,recorded_on
+    SELECT bank_account_id
+        , client_id
+        , bank_name
+        , account_num
+        , routing_num
+        , branch_num
+        , iban
+        , country
+        , account_login
+        , account_pwd
+        , account_status
+        , COALESCE( adms.keyvalue, account_status) as account_status_desc
+        , debit_card
+        , debit_info
+        , recorded_on
     FROM client.client_bank_account
+        LEFT OUTER JOIN ADMIN.adm_setting adms ON adms.prefix = 'ACCOUNTSTATUS' AND adms.keyname = account_status
+
 """
     return sql
 
@@ -20,9 +36,16 @@ def get_client_bank_accounts():
 def get_client_bank_account_by_id(id):
     sql = get_client_bank_account_basesql()
     sql += """
-    WHERE id = %s
+    WHERE bank_account_id = %s
 """
     return db.fetchall(sql, [id])
+
+def get_client_bank_account_by_client_id( client_id):
+    sql = get_client_bank_account_basesql()
+    sql += """
+    WHERE client_id = %s
+"""
+    return db.fetchall(sql, [client_id])
 
 # def get_client_bank_account_by_client_bank_account_id(client_bank_account_id):
 #     sql = get_client_bank_account_basesql()

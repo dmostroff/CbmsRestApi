@@ -17,3 +17,10 @@ def CcAccountJsonToModel( cc_account_json: str) -> CcAccountModel:
 def ClientBankAccountJsonToModel( client_back_account_json: str) -> ClientBankAccountModel:
     retval = ClientBankAccountModel.parse_obj( client_back_account_json)
     return retval
+
+# assemble all the client data into one json
+def clientData( **kwargs):
+    data = {}
+    for key, value in kwargs.items():
+        data[key] = value
+    return data

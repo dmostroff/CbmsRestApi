@@ -131,8 +131,27 @@ from CcAccountModel import CcAccountModel
 
 def get_cc_account_basesql():
     sql = """
-    SELECT cc_account_id,cc_card_id,client_id,card_name,card_holder,open_date,account_info,cc_login,cc_status,annual_fee_waived,credit_limit,last_checked,last_charge,addtional_card,balance_transfer,notes,ccaccount_info,recorded_on
+    SELECT cc_account_id
+        , cc_card_id
+        , client_id
+        , card_name
+        , card_holder
+        , open_date
+        , account_info
+        , cc_login
+        , cc_status
+        , COALESCE( adms.keyvalue, cc_status) AS cc_status_desc
+        , annual_fee_waived
+        , credit_limit
+        , last_checked
+        , last_charge
+        , addtional_card
+        , balance_transfer
+        , notes
+        , ccaccount_info
+        , recorded_on
     FROM cc_account
+        LEFT OUTER JOIN ADMIN.adm_setting adms ON adms.prefix = 'CARDSTATUS' AND adms.keyname = cc_status
 """
     return sql
 

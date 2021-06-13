@@ -1,4 +1,5 @@
 import client_repository as cr
+import client_address_repository as car
 import base_service as bs
 import common_service as cs
 
@@ -68,6 +69,13 @@ def put_client_person (client_person:ClientPersonModel):
     return cr.insert_client_person(client_person)
 
 #--------------------
+# credit summary
+#--------------------
+@bs.repository_call_single_row_data
+def get_client_credit_summary_by_client_id (client_id):
+    return cr.get_client_credit_summary_by_client_id(client_id)
+
+#--------------------
 # client_creditline_history
 #--------------------
 from ClientCreditlineHistoryModel import ClientCreditlineHistoryModel
@@ -78,6 +86,10 @@ def get_client_creditline_history ():
 
 @bs.repository_call
 def get_client_creditline_history_by_client_id (client_id):
+    return cr.get_client_creditline_history_by_client_id(client_id)
+
+@bs.repository_call_data
+def get_client_creditline_history_data_by_client (client_id):
     return cr.get_client_creditline_history_by_client_id(client_id)
 
 @bs.repository_call
@@ -97,25 +109,21 @@ def put_client_creditline_history (client_creditline_history:ClientCreditlineHis
 #--------------------
 from ClientAddressModel import ClientAddressModel
 
-@bs.repository_call
-def get_client_address ():
-    return cr.get_client_address()
-
-@bs.repository_call
+@bs.repository_call_data
 def get_client_address_by_client_id (client_id):
-    return cr.get_client_address_by_client_id(client_id)
+    return car.get_client_address_by_client_id(client_id)
 
 @bs.repository_call
 def get_client_address_by_id (id):
-    return cr.get_client_address_by_id(id)
+    return car.get_client_address_by_id(id)
 
 @bs.repository_call
 def post_client_address ( client_address:ClientAddressModel):
-    return cr.upsert_client_address(client_address)
+    return car.upsert_client_address(client_address)
 
 @bs.repository_call
 def put_client_address (client_address:ClientAddressModel):
-    return cr.insert_client_address(client_address)
+    return car.insert_client_address(client_address)
 
 
 #--------------------
@@ -153,7 +161,7 @@ from ClientNoteModel import ClientNoteModel
 def get_client_note ():
     return cr.get_client_note()
 
-@bs.repository_call
+@bs.repository_call_data
 def get_client_note_by_client_id (client_id):
     return cr.get_client_note_by_client_id(client_id)
 
@@ -231,7 +239,7 @@ from ClientCcBalanceTransferModel import ClientCcBalanceTransferModel
 def get_client_cc_balance_transfer ():
     return cr.get_client_cc_balance_transfer()
 
-@bs.repository_call
+@bs.repository_call_data
 def get_client_cc_balance_transfer_by_client_id (client_id):
     return cr.get_client_cc_balance_transfer_by_client_id(client_id)
 
