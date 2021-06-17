@@ -15,6 +15,7 @@ def get_cc_card_basesql():
 
 def get_cc_cards():
     sql = get_cc_card_basesql()
+    sql += " ORDER BY cc_company_id, card_name"
     return db.fetchall(sql)
 
 def get_cc_card_by_id(id):
