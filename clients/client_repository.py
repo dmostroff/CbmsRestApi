@@ -1,4 +1,5 @@
 import pgsql_db_layer as db
+import re
 
 
 #######################
@@ -86,7 +87,7 @@ def upsert_client_person( client_person:ClientPersonModel):
             , %s as last_name
             , %s as first_name
             , %s as middle_name
-            , %s as dob
+            , to_date(%s::text, 'YYYY-MM-DD') as dob
             , %s as gender
             , %s as ssn
             , %s as mmn
@@ -98,8 +99,8 @@ def upsert_client_person( client_person:ClientPersonModel):
             , %s as phone_cell
             , %s as phone_official
             , %s as client_status
-            , %s as client_info
-            , %s as recorded_on
+            , to_jsonb(%s::text) as client_info
+            , CURRENT_TIMESTAMP as recorded_on
     ),
     u AS (
         UPDATE client_person
@@ -123,7 +124,7 @@ def upsert_client_person( client_person:ClientPersonModel):
             , recorded_on=t.recorded_on
         FROM t
         WHERE client_person.client_id = t.client_id
-        RETURNING client_id
+        RETURNING client_person.*
     ),
     i AS (
         INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on)
@@ -147,6 +148,7 @@ def upsert_client_person( client_person:ClientPersonModel):
             , t.recorded_on
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
+        RETURNING client_person.*
     )
     SELECT 'INSERT' as ACTION, client_id
     FROM i
@@ -161,22 +163,21 @@ def upsert_client_person( client_person:ClientPersonModel):
             , client_person.last_name
             , client_person.first_name
             , client_person.middle_name
-            , client_person.dob
+            , str(client_person.dob)
             , client_person.gender
-            , client_person.ssn
+            , re.sub( '[^\d]', '', client_person.ssn)
             , client_person.mmn
             , client_person.email
             , client_person.pwd
             , client_person.occupation
-            , client_person.phone
+            , re.sub( '[^\d]', '', client_person.phone)
             , client_person.phone_2
             , client_person.phone_cell
             , client_person.phone_official
             , client_person.client_status
             , client_person.client_info
-            , client_person.recorded_on
         ]
-    return db.execute(sql, val)
+    return db.fetchall(sql, val)
 
 def insert_client_person( client_person:ClientPersonModel):
     sql = """

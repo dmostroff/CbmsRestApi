@@ -19,5 +19,5 @@ class CcAccount(Resource):
 class CcAccountPost(Resource):
     def post(self):
         cc_account = CcAccountJsonToModel(request.get_json())
-        return cas.upsert_cc_account( cc_account)
+        return cas.post_cc_account( cc_account)
 # print( "ccaccount_resource")

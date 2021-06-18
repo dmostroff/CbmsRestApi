@@ -23,7 +23,7 @@ class ClientPerson(Resource):
 
     def post( self):
         client_person = ClientPersonJsonToModel(request.get_json())
-        return cs.upsert_client_person( client_person)
+        return cs.post_client_person( client_person)
 
     def delete(self):
         return cs.delete_client_person_by_id(id)
@@ -31,4 +31,4 @@ class ClientPerson(Resource):
 class ClientPersonPost(Resource):
     def post(self):
         client_person = ClientPersonJsonToModel(request.get_json())
-        return cs.upsert_client_person( client_person)
+        return cs.post_client_person( client_person)

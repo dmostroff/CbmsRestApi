@@ -18,11 +18,11 @@ def get_cc_account_by_client_id (client_id):
 def get_cc_account_data_by_client (client_id):
     return car.get_cc_account_by_client_id(client_id)
 
-@bs.repository_call
+@bs.repository_call_single_row
 def get_cc_account_by_id (id):
     return car.get_cc_account_by_id(id)
 
-@bs.repository_call
+@bs.repository_call_single_row
 def post_cc_account ( cc_account:CcAccountModel):
     return car.upsert_cc_account(cc_account)
 

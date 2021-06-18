@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class CcAccountModel(BaseModel):
-    cc_account_id: int
+    cc_account_id: Optional[int] = None
     cc_card_id: int
     client_id: int
     card_name: str
@@ -20,5 +20,5 @@ class CcAccountModel(BaseModel):
     balance_transfer: Optional[str] = None
     notes: Optional[str] = None
     ccaccount_info: Optional[str] = None
-    recorded_on: datetime
+    recorded_on: Optional[datetime] = None
     
