@@ -95,8 +95,6 @@ def upsert_client_person( client_person:ClientPersonModel):
             , %s as occupation
             , %s as phone
             , %s as phone_2
-            , %s as phone_cell
-            , %s as phone_official
             , %s as client_status
             , to_jsonb(%s::text) as client_info
             , CURRENT_TIMESTAMP as recorded_on
@@ -116,8 +114,6 @@ def upsert_client_person( client_person:ClientPersonModel):
             , occupation=t.occupation
             , phone=t.phone
             , phone_2=t.phone_2
-            , phone_cell=t.phone_cell
-            , phone_official=t.phone_official
             , client_status=t.client_status
             , client_info=t.client_info
             , recorded_on=t.recorded_on
@@ -126,7 +122,23 @@ def upsert_client_person( client_person:ClientPersonModel):
         RETURNING client_person.*
     ),
     i AS (
-        INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on)
+        INSERT INTO client_person( 
+            last_name
+            , first_name
+            , middle_name
+            , dob
+            , gender
+            , ssn
+            , mmn
+            , email
+            , pwd
+            , occupation
+            , phone
+            , phone_2
+            , client_status
+            , client_info
+            , recorded_on
+            )
         SELECT 
             t.last_name
             , t.first_name
@@ -140,8 +152,6 @@ def upsert_client_person( client_person:ClientPersonModel):
             , t.occupation
             , t.phone
             , t.phone_2
-            , t.phone_cell
-            , t.phone_official
             , t.client_status
             , t.client_info
             , t.recorded_on
@@ -170,9 +180,7 @@ def upsert_client_person( client_person:ClientPersonModel):
             , client_person.pwd
             , client_person.occupation
             , re.sub( '[^\d]', '', client_person.phone)
-            , client_person.phone_2
-            , client_person.phone_cell
-            , client_person.phone_official
+            , re.sub( '[^\d]', '', client_person.phone_2)
             , client_person.client_status
             , client_person.client_info
         ]
