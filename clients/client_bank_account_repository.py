@@ -8,7 +8,7 @@ from ClientBankAccountModel import ClientBankAccountModel
 
 def get_client_bank_account_basesql():
     sql = """
-    SELECT bank_account_id
+    SELECT client_bank_account.id
         , client_id
         , bank_name
         , account_num
@@ -36,7 +36,7 @@ def get_client_bank_accounts():
 def get_client_bank_account_by_id(id):
     sql = get_client_bank_account_basesql()
     sql += """
-    WHERE bank_account_id = %s
+    WHERE client_bank_account.id = %s
 """
     return db.fetchall(sql, [id])
 
@@ -65,13 +65,13 @@ def upsert_client_bank_account( client_bank_account:ClientBankAccountModel):
             , %s::text as routing_num
             , %s::text as branch_num
             , %s::text as iban
-            , %s::character as country
+            , %s::text as country
             , %s::text as account_login
             , %s::text as account_pwd
             , %s::character varying as account_status
             , %s::text as debit_card
             , %s::text as debit_info
-            , %s::timestamp with time zone as recorded_on
+            , CURRENT_TIMESTAMP as recorded_on
     ),
     u AS (
         UPDATE client.client_bank_account
@@ -91,7 +91,7 @@ def upsert_client_bank_account( client_bank_account:ClientBankAccountModel):
             , recorded_on=t.recorded_on
         FROM t
         WHERE client_bank_account.id = t.id
-        RETURNING client_bank_account.id
+        RETURNING client_bank_account.*
     ),
     i AS (
         INSERT INTO client.client_bank_account( client_id,bank_name,account_num,routing_num,branch_num,iban,country,account_login,account_pwd,account_status,debit_card,debit_info,recorded_on)
@@ -111,12 +111,12 @@ def upsert_client_bank_account( client_bank_account:ClientBankAccountModel):
             , t.recorded_on
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
-        RETURNING client_bank_account.id
+        RETURNING client_bank_account.*
     )
-    SELECT 'INSERT' as ACTION, id
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, id
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
 """
     val = [
@@ -133,14 +133,13 @@ def upsert_client_bank_account( client_bank_account:ClientBankAccountModel):
             , client_bank_account.account_status
             , client_bank_account.debit_card
             , client_bank_account.debit_info
-            , client_bank_account.recorded_on
         ]
     return db.fetchall(sql, val)
 
 def insert_client_bank_account( client_bank_account:ClientBankAccountModel):
     sql = """
-    INSERT INTO client.client_bank_account( client_id,bank_name,account_num,routing_num,branch_num,iban,country,account_login,account_pwd,account_status,debit_card,debit_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO client.client_bank_account( client_id,bank_name,account_num,routing_num,branch_num,iban,country,account_login,account_pwd,account_status,debit_card,debit_info)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING *
 """
     val = [
@@ -156,7 +155,6 @@ def insert_client_bank_account( client_bank_account:ClientBankAccountModel):
             , client_bank_account.account_status
             , client_bank_account.debit_card
             , client_bank_account.debit_info
-            , client_bank_account.recorded_on
         ]
     return db.fetchone(sql, val)
 
@@ -164,7 +162,19 @@ def insert_client_bank_account( client_bank_account:ClientBankAccountModel):
 def update_client_bank_account( client_bank_account:ClientBankAccountModel):
     sql = """
     UPDATE client.client_bank_account
-    SET client_id = %s, bank_name = %s, account_num = %s, routing_num = %s, branch_num = %s, iban = %s, country = %s, account_login = %s, account_pwd = %s, account_status = %s, debit_card = %s, debit_info = %s, recorded_on = %s
+    SET client_id = %s
+        , bank_name = %s
+        , account_num = %s
+        , routing_num = %s
+        , branch_num = %s
+        , iban = %s
+        , country = %s
+        , account_login = %s
+        , account_pwd = %s
+        , account_status = %s
+        , debit_card = %s
+        , debit_info = %s
+        , recorded_on = CURRENT_TIMESTAMP
     WHERE id = %s
     RETURNING *
 """
@@ -180,7 +190,6 @@ def update_client_bank_account( client_bank_account:ClientBankAccountModel):
             , client_bank_account.account_status
             , client_bank_account.debit_card
             , client_bank_account.debit_info
-            , client_bank_account.recorded_on
         , client_bank_account.id            
         ]
     return db.fetchone(sql, val)

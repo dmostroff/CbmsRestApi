@@ -8,7 +8,7 @@ import ClientAddressModel
 
 def get_client_address_basesql():
     sql = """
-    SELECT address_id,client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on
+    SELECT id,client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on
     FROM client_address
 """
     return sql
@@ -20,7 +20,7 @@ def get_client_addresss():
 def get_client_address_by_id(id):
     sql = get_client_address_basesql()
     sql += """
-    WHERE address_id = %s
+    WHERE id = %s
 """
     return db.fetchall(sql, [id])
 
@@ -42,7 +42,7 @@ def upsert_client_address( client_address:ClientAddressModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s::integer as address_id
+            %s::integer as id
             , %s::integer as client_id
             , %s::character varying as address_type
             , %s::text as address_1
@@ -53,7 +53,7 @@ def upsert_client_address( client_address:ClientAddressModel):
             , %s::character as country
             , %s::date as valid_from
             , %s::date as valid_to
-            , %s::timestamp with time zone as recorded_on
+            , CURRENT_TIMESTAMP as recorded_on
     ),
     u AS (
         UPDATE client_address
@@ -68,13 +68,23 @@ def upsert_client_address( client_address:ClientAddressModel):
             , country=t.country
             , valid_from=t.valid_from
             , valid_to=t.valid_to
-            , recorded_on=t.recorded_on
         FROM t
-        WHERE client_address.address_id = t.address_id
-        RETURNING , client_address.address_id
+        WHERE client_address.id = t.id
+        RETURNING client_address.*
     ),
     i AS (
-        INSERT INTO client_address( client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on)
+        INSERT INTO client_address( client_id
+            , address_type
+            , address_1
+            , address_2
+            , city
+            , state
+            , zip
+            , country
+            , valid_from
+            , valid_to
+            , recorded_on
+            )
         SELECT 
             t.client_id
             , t.address_type
@@ -89,16 +99,16 @@ def upsert_client_address( client_address:ClientAddressModel):
             , t.recorded_on
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
-        RETURNING , client_address.address_id
+        RETURNING client_address.*
     )
-    SELECT 'INSERT' as ACTION, address_id
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, address_id
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
 """
     val = [
-            client_address.address_id
+            client_address.id
             , client_address.client_id
             , client_address.address_type
             , client_address.address_1
@@ -115,8 +125,18 @@ def upsert_client_address( client_address:ClientAddressModel):
 
 def insert_client_address( client_address:ClientAddressModel):
     sql = """
-    INSERT INTO client_address( client_id,address_type,address_1,address_2,city,state,zip,country,valid_from,valid_to,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO client_address( client_id
+        , address_type
+        , address_1
+        , address_2
+        , city
+        , state
+        , zip
+        , country
+        , valid_from
+        , valid_to
+        )
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING *
     ;
 """
@@ -139,21 +159,30 @@ def insert_client_address( client_address:ClientAddressModel):
 def update_client_address( client_address:ClientAddressModel):
     sql = """
     UPDATE client_address
-    SET client_id = %s, address_type = %s, address_1 = %s, address_2 = %s, city = %s, state = %s, zip = %s, country = %s, valid_from = %s, valid_to = %s, recorded_on = %s
-    WHERE address_id = %s
+    SET client_id = %s
+        , address_type = %s
+        , address_1 = %s
+        , address_2 = %s
+        , city = %s
+        , state = %s
+        , zip = %s
+        , country = %s
+        , valid_from = %s
+        , valid_to = %s
+        , recorded_on = CURRENT_TIMESTAMP
+    WHERE id = %s
     RETURNING *
 """
     val = [client_address.client_id
-            , client_address.address_type
-            , client_address.address_1
-            , client_address.address_2
-            , client_address.city
-            , client_address.state
-            , client_address.zip
-            , client_address.country
-            , client_address.valid_from
-            , client_address.valid_to
-            , client_address.recorded_on
-        , client_address.address_id            
+        , client_address.address_type
+        , client_address.address_1
+        , client_address.address_2
+        , client_address.city
+        , client_address.state
+        , client_address.zip
+        , client_address.country
+        , client_address.valid_from
+        , client_address.valid_to
+        , client_address.id
         ]
     return db.fetchone(sql, val)

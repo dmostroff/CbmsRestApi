@@ -8,7 +8,7 @@ import CcCompanyModel
 
 def get_cc_company_basesql():
     sql = """
-    SELECT cc_company_id,company_name,url,contact,address_1,address_2,city,state,zip,country,phone,phone_2,phone_cell,phone_fax,company_info,recorded_on
+    SELECT id,company_name,url,contact,address_1,address_2,city,state,zip,country,phone,phone_2,phone_cell,phone_fax,company_info,recorded_on
     FROM cc_company
 """
     return sql
@@ -20,7 +20,7 @@ def get_cc_companies():
 def get_cc_company_by_id(id):
     sql = get_cc_company_basesql()
     sql += """
-    WHERE cc_company_id = %s
+    WHERE id = %s
 """
     return db.fetchall(sql, [id])
 
@@ -28,7 +28,7 @@ def upsert_cc_company( cc_company:CcCompanyModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s::integer as cc_company_id
+            %s::integer as id
             , %s::text as company_name
             , %s::text as url
             , %s::text as contact
@@ -43,7 +43,7 @@ def upsert_cc_company( cc_company:CcCompanyModel):
             , %s::character varying as phone_cell
             , %s::character varying as phone_fax
             , %s::jsonb as company_info
-            , %s::timestamp with time zone as recorded_on
+            , CURRENT_TIMESTAMP as recorded_on
     ),
     u AS (
         UPDATE cc_company
@@ -64,8 +64,8 @@ def upsert_cc_company( cc_company:CcCompanyModel):
             , company_info=t.company_info
             , recorded_on=t.recorded_on
         FROM t
-        WHERE cc_company.cc_company_id = t.cc_company_id
-        RETURNING , cc_company.cc_company_id
+        WHERE cc_company.id = t.id
+        RETURNING cc_company.*
     ),
     i AS (
         INSERT INTO cc_company( company_name,url,contact,address_1,address_2,city,state,zip,country,phone,phone_2,phone_cell,phone_fax,company_info,recorded_on)
@@ -87,16 +87,16 @@ def upsert_cc_company( cc_company:CcCompanyModel):
             , t.recorded_on
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
-        RETURNING , cc_company.cc_company_id
+        RETURNING cc_company.*
     )
-    SELECT 'INSERT' as ACTION, cc_company_id
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, cc_company_id
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
 """
     val = [
-            cc_company.cc_company_id
+            cc_company.id
             , cc_company.company_name
             , cc_company.url
             , cc_company.contact
@@ -111,14 +111,13 @@ def upsert_cc_company( cc_company:CcCompanyModel):
             , cc_company.phone_cell
             , cc_company.phone_fax
             , cc_company.company_info
-            , cc_company.recorded_on
         ]
     return db.fetchall(sql, val)
 
 def insert_cc_company( cc_company:CcCompanyModel):
     sql = """
-    INSERT INTO cc_company( company_name,url,contact,address_1,address_2,city,state,zip,country,phone,phone_2,phone_cell,phone_fax,company_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO cc_company( company_name,url,contact,address_1,address_2,city,state,zip,country,phone,phone_2,phone_cell,phone_fax,company_info)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     RETURNING *
     ;
 """
@@ -138,7 +137,6 @@ def insert_cc_company( cc_company:CcCompanyModel):
             , cc_company.phone_cell
             , cc_company.phone_fax
             , cc_company.company_info
-            , cc_company.recorded_on
         ]
     return db.fetchone(sql, val)
 
@@ -146,11 +144,24 @@ def insert_cc_company( cc_company:CcCompanyModel):
 def update_cc_company( cc_company:CcCompanyModel):
     sql = """
     UPDATE cc_company
-    SET company_name = %s, url = %s, contact = %s, address_1 = %s, address_2 = %s, city = %s, state = %s, zip = %s, country = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_fax = %s, company_info = %s, recorded_on = %s
-    WHERE cc_company_id = %s
+    SET company_name = %s
+        , url = %s
+        , contact = %s
+        , address_1 = %s
+        , address_2 = %s
+        , city = %s
+        , state = %s
+         , zip = %s
+         , country = %s
+         , phone = %s
+         , phone_2 = %s
+         , company_info = %s
+         , recorded_on = CURRENT_TIMESTAMP
+    WHERE id = %s
     RETURNING *
 """
-    val = [cc_company.company_name
+    val = [
+            cc_company.company_name
             , cc_company.url
             , cc_company.contact
             , cc_company.address_1
@@ -161,10 +172,7 @@ def update_cc_company( cc_company:CcCompanyModel):
             , cc_company.country
             , cc_company.phone
             , cc_company.phone_2
-            , cc_company.phone_cell
-            , cc_company.phone_fax
             , cc_company.company_info
-            , cc_company.recorded_on
-        , cc_company.cc_company_id            
+            , cc_company.id            
         ]
     return db.fetchone(sql, val)

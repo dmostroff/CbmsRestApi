@@ -56,7 +56,7 @@ def get_client_person_data (client_id):
 def get_client_person_by_id (id):
     return cr.get_client_person_by_id(id)
 
-@bs.repository_call
+@bs.repository_call_single_row
 def post_client_person ( client_person:ClientPersonModel):
     return cr.upsert_client_person(client_person)
 

@@ -41,7 +41,7 @@ def upsert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
             , %s as bal_transfer_date
             , %s as bal_transfer_amt
             , %s as promo_info
-            , %s as recorded_on
+            , CURRENT_TIMESTAMP as recorded_on
     ),
     u AS (
         UPDATE cc_account_promo
@@ -55,7 +55,7 @@ def upsert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
             , recorded_on=t.recorded_on
         FROM t
         WHERE cc_account_promo.promo_id = t.promo_id
-        RETURNING promo_id
+        RETURNING cc_account_promo.*
     ),
     i AS (
         INSERT INTO cc_account_promo( cc_account_id,offer,loan_amt,bal_transfer_date,bal_transfer_amt,promo_info,recorded_on)
@@ -69,16 +69,17 @@ def upsert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
             , t.recorded_on
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
+        RETURNING cc_account_promo.*
     )
-    SELECT 'INSERT' as ACTION, promo_id
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, promo_id
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
 """
     val = [
             cc_account_promo.promo_id
-            , cc_account_promo.cc_account_id
+            , cc_account_promo.id
             , cc_account_promo.offer
             , cc_account_promo.loan_amt
             , cc_account_promo.bal_transfer_date
@@ -91,7 +92,7 @@ def upsert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
 def insert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
     sql = """
     INSERT INTO cc_account_promo( cc_account_id,offer,loan_amt,bal_transfer_date,bal_transfer_amt,promo_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
     ;
 """
     val = [
@@ -102,7 +103,6 @@ def insert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
             , cc_account_promo.bal_transfer_date
             , cc_account_promo.bal_transfer_amt
             , cc_account_promo.promo_info
-            , cc_account_promo.recorded_on
         ]
     return db.execute(sql, val)
 
@@ -110,7 +110,13 @@ def insert_cc_account_promo( cc_account_promo:CcAccountPromoModel):
 def update_cc_account_promo( cc_account_promo:CcAccountPromoModel):
     sql = """
     UPDATE cc_account_promo
-    SET cc_account_id = %s, offer = %s, loan_amt = %s, bal_transfer_date = %s, bal_transfer_amt = %s, promo_info = %s, recorded_on = %s
+    SET cc_account_id = %s
+        , offer = %s
+        , loan_amt = %s
+        , bal_transfer_date = %s
+        , bal_transfer_amt = %s
+        , promo_info = %s
+        , recorded_on = CURRENT_TIMESTAMP
     WHERE promo_id = %s
 """
     val = [cc_account_promo.cc_account_id
@@ -119,7 +125,6 @@ def update_cc_account_promo( cc_account_promo:CcAccountPromoModel):
             , cc_account_promo.bal_transfer_date
             , cc_account_promo.bal_transfer_amt
             , cc_account_promo.promo_info
-            , cc_account_promo.recorded_on
             , cc_account_promo.promo_id
         ]
     return db.execute(sql, val)
@@ -131,7 +136,7 @@ from CcAccountModel import CcAccountModel
 
 def get_cc_account_basesql():
     sql = """
-    SELECT cc_account_id
+    SELECT cc_account.id
         , cc_card_id
         , client_id
         , card_name
@@ -162,7 +167,7 @@ def get_cc_account():
 def get_cc_account_by_id(id):
     sql = get_cc_account_basesql()
     sql += """
-    WHERE cc_account_id = %s
+    WHERE id = %s
 """
     return db.fetchall(sql, [id])
 
@@ -177,7 +182,7 @@ def upsert_cc_account( cc_account:CcAccountModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s as cc_account_id
+            %s as id
             , %s as cc_card_id
             , %s as client_id
             , %s as card_name
@@ -213,7 +218,7 @@ def upsert_cc_account( cc_account:CcAccountModel):
             , ccaccount_info=t.ccaccount_info
             , recorded_on=t.recorded_on
         FROM t
-        WHERE cc_account.cc_account_id = t.cc_account_id::int
+        WHERE cc_account.id = t.id::int
         RETURNING cc_account.*
     ),
     i AS (
@@ -254,16 +259,16 @@ def upsert_cc_account( cc_account:CcAccountModel):
         WHERE NOT EXISTS ( SELECT 1 FROM u)
         RETURNING cc_account.*
     )
-    SELECT 'INSERT' as ACTION, cc_account_id, client_id, card_name, card_holder
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, cc_account_id, client_id, card_name, card_holder
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
     ;
     ;
 """
     val = [
-            cc_account.cc_account_id
+            cc_account.id
             , cc_account.cc_card_id
             , cc_account.client_id
             , cc_account.card_name
@@ -293,8 +298,8 @@ def upsert_cc_account( cc_account:CcAccountModel):
 
 def insert_cc_account( cc_account:CcAccountModel):
     sql = """
-    INSERT INTO cc_account( cc_card_id,client_id,card_name,card_holder,open_date,account_info,cc_login,cc_status,annual_fee_waived,credit_limit,last_checked,last_charge,addtional_card,balance_transfer,notes,ccaccount_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO cc_account( cc_card_id,client_id,card_name,card_holder,open_date,account_info,cc_login,cc_status,annual_fee_waived,credit_limit,last_checked,last_charge,addtional_card,balance_transfer,notes,ccaccount_info)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ;
 """
     val = [
@@ -313,7 +318,6 @@ def insert_cc_account( cc_account:CcAccountModel):
             , cc_account.balance_transfer
             , cc_account.notes
             , cc_account.ccaccount_info
-            , cc_account.recorded_on
         ]
     return db.execute(sql, val)
             # , cc_account.account_info
@@ -338,7 +342,7 @@ def update_cc_account( cc_account:CcAccountModel):
         , notes = %s
         , ccaccount_info = %s
         , recorded_on = %s
-    WHERE cc_account_id = %s
+    WHERE id = %s
 """
     val = [cc_account.cc_card_id
             , cc_account.client_id
@@ -355,7 +359,7 @@ def update_cc_account( cc_account:CcAccountModel):
             , cc_account.notes
             , cc_account.ccaccount_info
             , cc_account.recorded_on
-            , cc_account.cc_account_id
+            , cc_account.id
         ]
     return db.execute(sql, val)
         # , account_info = %s

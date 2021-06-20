@@ -23,8 +23,7 @@ def get_client_bank_account_by_client_id (client_id):
 def get_client_bank_account_by_id (id):
     return cr.get_client_bank_account_by_id(id)
 
+@bs.repository_call_single_row
 def upsert_client_bank_account ( client_bank_account:ClientBankAccountModel):
-    df = cr.upsert_client_bank_account(client_bank_account)
-    id = np.int64(df['id'].values[0]).item()
-    return get_client_bank_account_by_id(id)
+    return cr.upsert_client_bank_account(client_bank_account)
 

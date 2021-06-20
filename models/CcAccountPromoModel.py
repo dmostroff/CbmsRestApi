@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class CcAccountPromoModel(BaseModel):
-    promo_id: int
+    promo_id: Optional[int] = None
     cc_account_id: int
     offer: Optional[str] = None
     loan_amt: Optional[int] = None

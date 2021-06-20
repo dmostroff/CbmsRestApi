@@ -8,7 +8,13 @@ import CcCardModel
 
 def get_cc_card_basesql():
     sql = """
-    SELECT cc_card_id,cc_company_id,card_name,version,annual_fee,first_year_free,recorded_on
+    SELECT id
+        , cc_company_id
+        , card_name
+        , version
+        , annual_fee
+        , first_year_free
+        , recorded_on
     FROM cc_card
 """
     return sql
@@ -36,13 +42,13 @@ def upsert_cc_card( cc_card:CcCardModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s::integer as cc_card_id
+            %s::integer as id
             , %s::integer as cc_company_id
             , %s::text as card_name
             , %s::text as version
             , %s::numeric as annual_fee
             , %s::boolean as first_year_free
-            , %s::timestamp with time zone as recorded_on
+            , CURRENT_TIMESTAMP as recorded_on
     ),
     u AS (
         UPDATE cc_card
@@ -54,8 +60,8 @@ def upsert_cc_card( cc_card:CcCardModel):
             , first_year_free=t.first_year_free
             , recorded_on=t.recorded_on
         FROM t
-        WHERE cc_card.cc_card_id = t.cc_card_id
-        RETURNING , cc_card.cc_card_id
+        WHERE cc_card.id = t.id
+        RETURNING cc_card.*
     ),
     i AS (
         INSERT INTO cc_card( cc_company_id,card_name,version,annual_fee,first_year_free,recorded_on)
@@ -68,40 +74,37 @@ def upsert_cc_card( cc_card:CcCardModel):
             , t.recorded_on
         FROM t
         WHERE NOT EXISTS ( SELECT 1 FROM u)
-        RETURNING , cc_card.cc_card_id
+        RETURNING cc_card.*
     )
-    SELECT 'INSERT' as ACTION, cc_card_id
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, cc_card_id
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
 """
     val = [
-            cc_card.cc_card_id
+            cc_card.id
             , cc_card.cc_company_id
             , cc_card.card_name
             , cc_card.version
             , cc_card.annual_fee
             , cc_card.first_year_free
-            , cc_card.recorded_on
         ]
     return db.fetchall(sql, val)
 
 def insert_cc_card( cc_card:CcCardModel):
     sql = """
-    INSERT INTO cc_card( cc_company_id,card_name,version,annual_fee,first_year_free,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    INSERT INTO cc_card( cc_company_id,card_name,version,annual_fee,first_year_free)
+    VALUES (%s, %s, %s, %s, %s)
     RETURNING *
     ;
 """
     val = [
-            
             cc_card.cc_company_id
             , cc_card.card_name
             , cc_card.version
             , cc_card.annual_fee
             , cc_card.first_year_free
-            , cc_card.recorded_on
         ]
     return db.fetchone(sql, val)
 
@@ -109,16 +112,21 @@ def insert_cc_card( cc_card:CcCardModel):
 def update_cc_card( cc_card:CcCardModel):
     sql = """
     UPDATE cc_card
-    SET cc_company_id = %s, card_name = %s, version = %s, annual_fee = %s, first_year_free = %s, recorded_on = %s
-    WHERE cc_card_id = %s
+    SET cc_company_id = %s
+        , card_name = %s
+        , version = %s
+        , annual_fee = %s
+        , first_year_free = %s
+        , recorded_on = CURRENT_TIMESTAMP
+    WHERE id = %s
     RETURNING *
 """
-    val = [cc_card.cc_company_id
+    val = [
+            cc_card.cc_company_id
             , cc_card.card_name
             , cc_card.version
             , cc_card.annual_fee
             , cc_card.first_year_free
-            , cc_card.recorded_on
-        , cc_card.cc_card_id            
+            , cc_card.id            
         ]
     return db.fetchone(sql, val)

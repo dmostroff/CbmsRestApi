@@ -7,7 +7,7 @@ import re
 #######################
 def get_client_credit_summary():
     sql = """
-    SELECT cp.client_id
+    SELECT cp.id as id
         , MIN(TRIM( CONCAT(cp.last_name, ', ', cp.first_name, ' ', cp.middle_name))) as client_name
         , MIN(TRIM(CONCAT(address_1, ' ', address_2, ' ', city, ' ', state, ' ', zip))) as address
         , MIN(cp.email) AS email
@@ -15,24 +15,24 @@ def get_client_credit_summary():
         , MIN(COALESCE(cca.open_date, '1900-01-01')) as start_date
         , CAST( SUM( CASE WHEN cc_status = 'ACTIVE' THEN cca.credit_limit ELSE 0 END) AS DECIMAL(12,2)) AS total_credit_limit
     FROM client.client_person cp
-        LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.client_id
-        LEFT OUTER JOIN client.client_address ca ON ca.client_id = cp.client_id AND ca.address_type = 'primary'
-    GROUP BY cp.client_id
+        LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.id
+        LEFT OUTER JOIN client.client_address ca ON ca.client_id = cp.id AND ca.address_type = 'primary'
+    GROUP BY cp.id
     ORDER BY start_date, client_name
 """
     return db.fetchall(sql)
 
 def get_client_credit_summary_by_client_id( id):
     sql = """
-    SELECT cp.client_id
+    SELECT cp.id as client_id
         , MIN(TRIM( CONCAT(cp.last_name, ', ', cp.first_name, ' ', cp.middle_name))) as client_name
         , SUM( CASE WHEN cc_status = 'ACTIVE' THEN 1 ELSE 0 END) as number_of_cards
         , MIN(COALESCE(cca.open_date, '1900-01-01')) as start_date
         , CAST( SUM( CASE WHEN cc_status = 'ACTIVE' THEN cca.credit_limit ELSE 0 END) AS DECIMAL(12,2)) AS total_credit_limit
     FROM client.client_person cp
-        LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.client_id
-    WHERE cp.client_id = %s
-    GROUP BY cp.client_id
+        LEFT OUTER JOIN client.cc_account cca ON cca.client_id = cp.id
+    WHERE cp.id = %s
+    GROUP BY cp.id
     ORDER BY start_date, client_name
 """
     return db.fetchall(sql, [id])
@@ -46,7 +46,7 @@ from ClientPersonModel import ClientPersonModel
 
 def get_client_person_base_sql():
     sql = """
-    SELECT client_id
+    SELECT id
         , last_name
         , first_name
         , middle_name
@@ -59,7 +59,6 @@ def get_client_person_base_sql():
         , occupation
         , phone
         , phone_2
-        , phone_official
         , client_status
         , COALESCE( (SELECT MAX(keyvalue) FROM admin.adm_setting WHERE prefix = 'CLIENTSTATUS' AND keyname = client_status), client_status) as client_status_desc
         , client_info
@@ -75,7 +74,7 @@ def get_client_persons():
 def get_client_person_by_id(id):
     sql = get_client_person_base_sql()
     sql += """
-    WHERE client_id = %s
+    WHERE id = %s
 """
     return db.fetchall(sql, [id])
 
@@ -83,7 +82,7 @@ def upsert_client_person( client_person:ClientPersonModel):
     sql = """
     WITH t AS (
         SELECT 
-            %s as client_id
+            %s as id
             , %s as last_name
             , %s as first_name
             , %s as middle_name
@@ -123,7 +122,7 @@ def upsert_client_person( client_person:ClientPersonModel):
             , client_info=t.client_info
             , recorded_on=t.recorded_on
         FROM t
-        WHERE client_person.client_id = t.client_id
+        WHERE client_person.id = t.id
         RETURNING client_person.*
     ),
     i AS (
@@ -150,16 +149,16 @@ def upsert_client_person( client_person:ClientPersonModel):
         WHERE NOT EXISTS ( SELECT 1 FROM u)
         RETURNING client_person.*
     )
-    SELECT 'INSERT' as ACTION, client_id
+    SELECT 'INSERT' as ACTION, i.*
     FROM i
     UNION ALL
-    SELECT 'UPDATE' as ACTION, client_id
+    SELECT 'UPDATE' as ACTION, u.*
     FROM u
     ;
     ;
 """
     val = [
-            client_person.client_id
+            client_person.id
             , client_person.last_name
             , client_person.first_name
             , client_person.middle_name
@@ -181,8 +180,23 @@ def upsert_client_person( client_person:ClientPersonModel):
 
 def insert_client_person( client_person:ClientPersonModel):
     sql = """
-    INSERT INTO client_person( last_name,first_name,middle_name,dob,gender,ssn,mmn,email,pwd,occupation,phone,phone_2,phone_cell,phone_official,client_status,client_info,recorded_on)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    INSERT INTO client_person( 
+		last_name
+		, first_name
+		, middle_name
+		, dob
+		, gender
+		, ssn
+		, mmn
+		, email
+		, pwd
+		, occupation
+		, phone
+		, phone_2
+		, client_status
+		, client_info
+		)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
     ;
 """
     val = [
@@ -198,8 +212,6 @@ def insert_client_person( client_person:ClientPersonModel):
             , client_person.occupation
             , client_person.phone
             , client_person.phone_2
-            , client_person.phone_cell
-            , client_person.phone_official
             , client_person.client_status
             , client_person.client_info
             , client_person.recorded_on
@@ -210,8 +222,22 @@ def insert_client_person( client_person:ClientPersonModel):
 def update_client_person( client_person:ClientPersonModel):
     sql = """
     UPDATE client_person
-    SET last_name = %s, first_name = %s, middle_name = %s, dob = %s, gender = %s, ssn = %s, mmn = %s, email = %s, pwd = %s, occupation = %s, phone = %s, phone_2 = %s, phone_cell = %s, phone_official = %s, client_status = %s, client_info = %s, recorded_on = %s
-    WHERE client_id = %s
+    SET last_name = %s
+        , first_name = %s
+        , middle_name = %s
+        , dob = %s
+        , gender = %s
+        , ssn = %s
+        , mmn = %s
+        , email = %s
+        , pwd = %s
+        , occupation = %s
+        , phone = %s
+        , phone_2 = %s
+        , client_status = %s
+        , client_info = %s
+        , recorded_on = CURRENT_TIMSTAMP
+    WHERE id = %s
 """
     val = [client_person.last_name
             , client_person.first_name
@@ -225,19 +251,16 @@ def update_client_person( client_person:ClientPersonModel):
             , client_person.occupation
             , client_person.phone
             , client_person.phone_2
-            , client_person.phone_cell
-            , client_person.phone_official
             , client_person.client_status
             , client_person.client_info
-            , client_person.recorded_on
-            , client_person.client_id
+            , client_person.id
         ]
     return db.execute(sql, val)
 
 def delete_client_persons( id):
     sql = """
     DELETE FROM client_person
-    WHERE client_id = %s
+    WHERE id = %s
 """
     val = [ id ]
     return db.execute(sql, val                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               )

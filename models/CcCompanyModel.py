@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class CcCompanyModel(BaseModel):
-    cc_company_id: int
+    id: Optional[int] = None
     company_name: str
     url: Optional[str] = None
     contact: Optional[str] = None

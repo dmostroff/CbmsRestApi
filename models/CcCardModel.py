@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class CcCardModel(BaseModel):
-    cc_card_id: int
+    id: Optional[int] = None
     cc_company_id: int
     card_name: Optional[str] = None
     version: Optional[str] = None

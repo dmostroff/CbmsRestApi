@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class ClientAddressModel(BaseModel):
-    address_id: int
+    id: Optional[int] = None
     client_id: int
     address_type: str
     address_1: Optional[str] = None
