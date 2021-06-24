@@ -22,8 +22,9 @@ def get_cc_companies ():
 def get_cc_company_by_id (id):
     return cr.get_cc_company_by_id(id)
 
-def upsert_cc_company ( cc_company:CcCompanyModel):
-    df = cr.upsert_cc_company(cc_company)
-    id = np.int64(df['cc_company_id'].values[0]).item()
-    return get_cc_company_by_id(id)
+@bs.repository_call_single_row
+def post_cc_company ( cc_company:CcCompanyModel):
+    return cr.upsert_cc_company(cc_company)
+    # id = np.int64(df['cc_company_id'].values[0]).item()
+    # return get_cc_company_by_id(id)
 

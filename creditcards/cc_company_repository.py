@@ -35,9 +35,9 @@ def upsert_cc_company( cc_company:CcCompanyModel):
             , %s::text as address_1
             , %s::text as address_2
             , %s::text as city
-            , %s::character as state
-            , %s::character varying as zip
-            , %s::character as country
+            , %s::text as state
+            , %s::text as zip
+            , %s::text as country
             , %s::character varying as phone
             , %s::character varying as phone_2
             , %s::character varying as phone_cell
@@ -68,7 +68,23 @@ def upsert_cc_company( cc_company:CcCompanyModel):
         RETURNING cc_company.*
     ),
     i AS (
-        INSERT INTO cc_company( company_name,url,contact,address_1,address_2,city,state,zip,country,phone,phone_2,phone_cell,phone_fax,company_info,recorded_on)
+		INSERT INTO cc_company( 
+			company_name
+			,url
+			,contact
+			,address_1
+			,address_2
+			,city
+			,state
+			,zip
+			,country
+			,phone
+			,phone_2
+			,phone_cell
+			,phone_fax
+			,company_info
+			,recorded_on
+			)
         SELECT 
             t.company_name
             , t.url

@@ -26,7 +26,7 @@ from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPers
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount, CcAccountPost
 from clientbankaccount_resource import ClientBankAccounts, ClientBankAccountsByClient, ClientBankAccount, ClientBankAccountPost
 from cccard_resource import CcCards, CcCard
-from cccompany_resource import CcCompanies, CcCompanies, CcCompany
+from cccompany_resource import CcCompanies, CcCompanies, CcCompany, CcCompanyPost
 from db_resource import DatabaseInfo
 
 @app.before_request
@@ -122,6 +122,7 @@ api.add_resource( CcCards, '/creditcards')
 api.add_resource( CcCard, '/creditcard/<int:id>')
 api.add_resource( CcCompanies, '/cccompanies')
 api.add_resource( CcCompany, '/cccompany/<int:id>')
+api.add_resource( CcCompanyPost, '/cccompany')
 
 
 #-- Database

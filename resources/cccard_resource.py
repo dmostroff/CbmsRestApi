@@ -1,5 +1,7 @@
+from flask import request
 from flask_restful import Resource
 import cc_card_service as cs
+from creditcards_transform import CcCardModelJsonToModel
 
 class CcCards(Resource):
     def get(self):
@@ -11,5 +13,5 @@ class CcCard(Resource):
 
 class CcCardPost(Resource):
     def post(self, id):
-        cc_card = CcCardJsonToModel(request.get_json())
-        return cs.upsert_( )
+        cc_card = CcCardModelJsonToModel(request.get_json())
+        return cs.post_cc_card( cc_card )
