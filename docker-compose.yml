@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  cbmsrestapi:
+    image: cbmsrestapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 5003:5003
+      - 8081:8081

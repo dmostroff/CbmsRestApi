@@ -15,11 +15,7 @@ class ClientCreditSummary(Resource):
 
 class ClientPerson(Resource):
     def get(self, id):
-        client_person = cs.get_client_person_by_id(id)
-        client_account = cas.get_cc_account_by_client_id(id)
-        # if client_account['rc'] == 1:
-        #     retval['']
-        return client_account
+        return cs.get_client_person_by_id(id)
 
     def post( self):
         client_person = ClientPersonJsonToModel(request.get_json())

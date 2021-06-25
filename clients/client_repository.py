@@ -1,5 +1,6 @@
 import pgsql_db_layer as db
 import re
+from decimal import Decimal
 
 
 #######################
@@ -57,6 +58,8 @@ def get_client_person_base_sql():
         , email
         , pwd
         , occupation
+        , employer
+        , income
         , phone
         , phone_2
         , client_status
@@ -79,6 +82,10 @@ def get_client_person_by_id(id):
     return db.fetchall(sql, [id])
 
 def upsert_client_person( client_person:ClientPersonModel):
+    if client_person.dob is None:
+        client_person.dob = ''
+    client_person.income = re.sub( '[^\d\.]', '', client_person.income)
+    income = Decimal(client_person.income) if client_person.income > '' else None
     sql = """
     WITH t AS (
         SELECT 
@@ -86,13 +93,15 @@ def upsert_client_person( client_person:ClientPersonModel):
             , %s as last_name
             , %s as first_name
             , %s as middle_name
-            , to_date(%s::text, 'YYYY-MM-DD') as dob
+            , %s as dob
             , %s as gender
             , %s as ssn
             , %s as mmn
             , %s as email
             , %s as pwd
             , %s as occupation
+            , %s as employer
+            , CAST(%s AS DECIMAL(12,2)) as income
             , %s as phone
             , %s as phone_2
             , %s as client_status
@@ -105,13 +114,15 @@ def upsert_client_person( client_person:ClientPersonModel):
             last_name=t.last_name
             , first_name=t.first_name
             , middle_name=t.middle_name
-            , dob=t.dob
+            , dob=CASE WHEN t.dob > '' THEN to_date( t.dob, 'YYYY-MM-DD') ELSE null END
             , gender=t.gender
             , ssn=t.ssn
             , mmn=t.mmn
             , email=t.email
             , pwd=t.pwd
             , occupation=t.occupation
+            , employer=t.employer
+            , income=t.income
             , phone=t.phone
             , phone_2=t.phone_2
             , client_status=t.client_status
@@ -133,6 +144,8 @@ def upsert_client_person( client_person:ClientPersonModel):
             , email
             , pwd
             , occupation
+            , employer
+            , income
             , phone
             , phone_2
             , client_status
@@ -143,13 +156,15 @@ def upsert_client_person( client_person:ClientPersonModel):
             t.last_name
             , t.first_name
             , t.middle_name
-            , t.dob
+            , CASE WHEN t.dob > '' THEN to_date( t.dob, 'YYYY-MM-DD') ELSE null END
             , t.gender
             , t.ssn
             , t.mmn
             , t.email
             , t.pwd
             , t.occupation
+            , t.employer
+            , t.income
             , t.phone
             , t.phone_2
             , t.client_status
@@ -179,6 +194,8 @@ def upsert_client_person( client_person:ClientPersonModel):
             , client_person.email
             , client_person.pwd
             , client_person.occupation
+            , client_person.employer
+            , income
             , re.sub( '[^\d]', '', client_person.phone)
             , re.sub( '[^\d]', '', client_person.phone_2)
             , client_person.client_status

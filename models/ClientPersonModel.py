@@ -14,6 +14,8 @@ class ClientPersonModel(BaseModel):
     email: Optional[str] = None
     pwd: Optional[str] = None
     occupation: Optional[str] = None
+    employer: Optional[str] = None
+    income: Optional[str] = None
     phone: Optional[str] = None
     phone_2: Optional[str] = None
     client_status: Optional[str] = None
