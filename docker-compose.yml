@@ -5,7 +5,21 @@ services:
     image: cbmsrestapi
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.txt
     ports:
       - 5003:5003
       - 8081:8081
+  cbmsdb:
+    image: postgres
+    restart: always
+    container_name: cbmsdb
+    build:
+      context: .
+      dockerfile: "./DockerfilePostgres.txt"
+    environment:
+      POSTGRES_PASSWORD: chesed
+      POSTGRES_USER: postgres
+    ports:
+      - 54320:5432
+
+

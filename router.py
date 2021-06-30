@@ -15,16 +15,21 @@ print( 'router BEGIN')
 CORS(app)
 api = Api(app)
 
+
 import user_login_service as uls
 from user_login_resource import UserLogin
 from auth_user_resource import AuthUsers, AuthUser
 from auth_user_setting_resource import AuthUserSetting, AuthUserSettingByPrefix, AuthUserSettingPost
 from auth_role_resource import AuthRoles, AuthRole, AuthRolePost
 from adm_setting_resource import AdmSettings, AdmSettingByPrefix, AdmSetting, AdmSettingPost
+
+from cbmssummary_resource import CBMSSummary
+
 from client_resource import Client
 from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson, ClientPersonPost
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount, CcAccountPost
 from clientbankaccount_resource import ClientBankAccounts, ClientBankAccountsByClient, ClientBankAccount, ClientBankAccountPost
+
 from cccard_resource import CcCards, CcCard
 from cccompany_resource import CcCompanies, CcCompanies, CcCompany, CcCompanyPost
 from db_resource import DatabaseInfo
@@ -96,6 +101,9 @@ api.add_resource( AdmSettings, '/adm/settings')
 api.add_resource( AdmSettingByPrefix, '/adm/setting/<string:prefix>')
 api.add_resource( AdmSetting, '/adm/setting/<int:id>')
 api.add_resource( AdmSettingPost, '/adm/setting')
+
+#-- CBMS Summary
+api.add_resource( CBMSSummary, '/cbms/summary')
 
 #-- Client
 api.add_resource( Client, '/client/<int:id>')
