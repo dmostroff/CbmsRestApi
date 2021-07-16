@@ -20,7 +20,7 @@ def get_client_cc_history ():
     return cr.get_client_cc_history()
 
 @bs.repository_call
-def get_client_cc_history_by_client_id (client_id):
+def get_client_cc_history_by_client (client_id):
     return cr.get_client_cc_history_by_client_id(client_id)
 
 @bs.repository_call
@@ -45,7 +45,7 @@ def get_client_persons ():
     return cr.get_client_persons()
 
 @bs.repository_call
-def get_client_person_by_client_id (client_id):
+def get_client_person_by_client (client_id):
     return cr.get_client_person_by_id(client_id)
 
 @bs.repository_call_single_row_data
@@ -72,7 +72,7 @@ def put_client_person (client_person:ClientPersonModel):
 # credit summary
 #--------------------
 @bs.repository_call_single_row_data
-def get_client_credit_summary_by_client_id (client_id):
+def get_client_credit_summary_by_client (client_id):
     return cr.get_client_credit_summary_by_client_id(client_id)
 
 #--------------------
@@ -85,7 +85,7 @@ def get_client_creditline_history ():
     return cr.get_client_creditline_history()
 
 @bs.repository_call
-def get_client_creditline_history_by_client_id (client_id):
+def get_client_creditline_history_by_client (client_id):
     return cr.get_client_creditline_history_by_client_id(client_id)
 
 @bs.repository_call_data
@@ -110,7 +110,7 @@ def put_client_creditline_history (client_creditline_history:ClientCreditlineHis
 from ClientAddressModel import ClientAddressModel
 
 @bs.repository_call_data
-def get_client_address_by_client_id (client_id):
+def get_client_address_by_client (client_id):
     return car.get_client_address_by_client_id(client_id)
 
 @bs.repository_call
@@ -136,7 +136,7 @@ def get_client_setting ():
     return cr.get_client_setting()
 
 @bs.repository_call
-def get_client_setting_by_client_id (client_id):
+def get_client_setting_by_client (client_id):
     return cr.get_client_setting_by_client_id(client_id)
 
 @bs.repository_call
@@ -162,7 +162,7 @@ def get_client_note ():
     return cr.get_client_note()
 
 @bs.repository_call_data
-def get_client_note_by_client_id (client_id):
+def get_client_note_by_client (client_id):
     return cr.get_client_note_by_client_id(client_id)
 
 @bs.repository_call
@@ -188,7 +188,7 @@ def get_client_cc_points ():
     return cr.get_client_cc_points()
 
 @bs.repository_call
-def get_client_cc_points_by_client_id (client_id):
+def get_client_cc_points_by_client (client_id):
     return cr.get_client_cc_points_by_client_id(client_id)
 
 @bs.repository_call
@@ -214,7 +214,7 @@ def get_client_charges ():
     return cr.get_client_charges()
 
 @bs.repository_call
-def get_client_charges_by_client_id (client_id):
+def get_client_charges_by_client (client_id):
     return cr.get_client_charges_by_client_id(client_id)
 
 @bs.repository_call
@@ -240,7 +240,7 @@ def get_client_cc_balance_transfer ():
     return cr.get_client_cc_balance_transfer()
 
 @bs.repository_call_data
-def get_client_cc_balance_transfer_by_client_id (client_id):
+def get_client_cc_balance_transfer_by_client (client_id):
     return cr.get_client_cc_balance_transfer_by_client_id(client_id)
 
 @bs.repository_call
@@ -266,7 +266,7 @@ def get_client_cc_action ():
     return cr.get_client_cc_action()
 
 @bs.repository_call
-def get_client_cc_action_by_client_id (client_id):
+def get_client_cc_action_by_client (client_id):
     return cr.get_client_cc_action_by_client_id(client_id)
 
 @bs.repository_call_data
@@ -296,7 +296,7 @@ def get_client_self_lender ():
     return cr.get_client_self_lender()
 
 @bs.repository_call
-def get_client_self_lender_by_client_id (client_id):
+def get_client_self_lender_by_client (client_id):
     return cr.get_client_self_lender_by_client_id(client_id)
 
 @bs.repository_call
@@ -322,7 +322,7 @@ def get_client_cc_transaction ():
     return cr.get_client_cc_transaction()
 
 @bs.repository_call
-def get_client_cc_transaction_by_client_id (client_id):
+def get_client_cc_transaction_by_client (client_id):
     return cr.get_client_cc_transaction_by_client_id(client_id)
 
 @bs.repository_call

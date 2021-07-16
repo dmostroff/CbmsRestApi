@@ -4,7 +4,7 @@ import pgsql_db_layer as db
 #######################
 # client_address
 #######################
-import ClientAddressModel
+from ClientAddressModel import ClientAddressModel
 
 def get_client_address_basesql():
     sql = """

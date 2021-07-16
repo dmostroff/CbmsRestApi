@@ -1,5 +1,8 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8-slim-buster
+FROM python:3.9.6
+
+#FROM python:3.9.6-buster
+# FROM python:rc-buster
 
 EXPOSE 5003
 EXPOSE 8081

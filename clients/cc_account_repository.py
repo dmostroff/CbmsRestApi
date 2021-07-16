@@ -138,7 +138,7 @@ def get_cc_account_basesql():
     sql = """
     SELECT cc_account.id
         , cc_card_id
-        , client_id
+        , cc_account.client_id
         , card_name
         , card_holder
         , open_date
@@ -154,7 +154,17 @@ def get_cc_account_basesql():
         , balance_transfer
         , notes
         , ccaccount_info
-        , recorded_on
+        , (SELECT t.task
+            FROM (
+                SELECT ROW_NUMBER() OVER ( PARTITION BY cc_account_id ORDER BY due_on) rn
+                    , adms.keyvalue as task
+                FROM client.cc_account_todo cat
+                    LEFT JOIN ADMIN.adm_setting adms ON adms.prefix = 'CCACCOUNTTASK' AND adms.keyname = cat.task
+                WHERE cat.cc_account_id = cc_account.id
+                ) t
+            WHERE t.rn = 1
+            ) as task
+        , cc_account.recorded_on
     FROM cc_account
         LEFT OUTER JOIN ADMIN.adm_setting adms ON adms.prefix = 'CARDSTATUS' AND adms.keyname = cc_status
 """
@@ -167,14 +177,14 @@ def get_cc_account():
 def get_cc_account_by_id(id):
     sql = get_cc_account_basesql()
     sql += """
-    WHERE id = %s
+    WHERE cc_account.id = %s
 """
     return db.fetchall(sql, [id])
 
 def get_cc_account_by_client_id(client_id):
     sql = get_cc_account_basesql()
     sql += """
-    WHERE client_id = %s
+    WHERE cc_account.client_id = %s
 """
     return db.fetchall(sql, [client_id])
 

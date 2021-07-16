@@ -28,6 +28,7 @@ from cbmssummary_resource import CBMSSummary
 from client_resource import Client
 from clientperson_resource import ClientCreditSummary, ClientPersons, ClientPerson, ClientPersonPost
 from ccaccount_resource import CcAccounts, CcAccountsByClient, CcAccount, CcAccountPost
+from ccaccounttodo_resource import CcAccountTodos, CcAccountTodoByClient, CcAccountTodoByCcAccount, CcAccountTodo, CcAccountTodoPost
 from clientbankaccount_resource import ClientBankAccounts, ClientBankAccountsByClient, ClientBankAccount, ClientBankAccountPost
 
 from cccard_resource import CcCards, CcCard
@@ -118,6 +119,13 @@ api.add_resource( CcAccounts, '/ccaccounts')
 api.add_resource( CcAccountsByClient, '/client/<int:client_id>/ccaccount')
 api.add_resource( CcAccount, '/ccaccount/<int:id>')
 api.add_resource( CcAccountPost, '/ccaccount')
+
+#-- Client CC Account to do
+api.add_resource( CcAccountTodos, '/ccaccounttodos')
+api.add_resource( CcAccountTodoByClient, '/client/<int:client_id>/ccaccounttodo')
+api.add_resource( CcAccountTodoByCcAccount, '/ccaccount/<int:cc_account_id>/todo')
+api.add_resource( CcAccountTodo, '/ccaccounttodo/<int:id>')
+api.add_resource( CcAccountTodoPost, '/ccaccounttodo')
 
 #-- ClientBankAcc
 api.add_resource( ClientBankAccounts, '/bankaccounts')

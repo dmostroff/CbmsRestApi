@@ -10,7 +10,7 @@ class ClientBankAccounts(Resource):
 
 class ClientBankAccountsByClient(Resource):
     def get(self, client_id):
-        return cbas.get_client_bank_account_by_client_id(client_id)
+        return cbas.get_client_bank_account_by_client(client_id)
 
 class ClientBankAccount(Resource):
     def get(self, id):
